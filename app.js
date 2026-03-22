@@ -1137,9 +1137,27 @@ function renderPredictionConsultation() {
     markup += `</div></section>`;
 
     if (Object.keys(classMap).length > 0) {
+      // Pega a lista de classificados oficiais únicos (filtrando ausentes)
+      const officialSet = new Set();
+      participants.forEach(p => {
+         const r = backtestData.participants[p.name];
+         if (r && r[phase.key]?.class_details) {
+            r[phase.key].class_details.forEach(c => {
+              if (c.official && c.official !== "—" && c.official !== "-") {
+                officialSet.add(c.official);
+              }
+            });
+         }
+      });
+      const officialList = Array.from(officialSet);
+
       markup += `
         <section style="margin-bottom: 40px;">
-          <h2 style="margin-bottom: 20px;">${phase.title} - Classificados</h2>
+          <h2 style="margin-bottom: 8px;">${phase.title} - Classificados</h2>
+          <p style="margin-bottom: 20px; font-size: 0.9rem;" class="muted">
+            <strong style="color: var(--text);">Oficiais:</strong> 
+            ${officialList.length > 0 ? officialList.join(", ") : "Ainda não definidos"}
+          </p>
           <div class="predictions-consultation" style="gap: 20px;">
             <article class="prediction-consult-card">
               <div class="table-wrap">
@@ -1147,20 +1165,28 @@ function renderPredictionConsultation() {
                   <thead>
                     <tr>
                       <th>Palpiteiro</th>
-                      ${Object.values(classMap).map(c => `<th>Oficial: <strong>${c.official || "-"}</strong></th>`).join("")}
+                      <th>Acertos</th>
+                      <th colspan="8">Palpites Enviados (8 times)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    ${participants.filter((p) => backtestData.participants[p.name]).map((p) => `
+                    ${participants.filter((p) => backtestData.participants[p.name]).map((p) => {
+                      const cDetails = backtestData.participants[p.name][phase.key].class_details || [];
+                      const hits = cDetails.filter(c => c.hit).length;
+                      return `
                       <tr>
                         <td><strong>${p.name}</strong></td>
-                        ${Object.values(classMap).map((c) => {
-                          const pred = c.predictions.find((x) => x.name === p.name);
-                          if (!pred) return `<td>-</td>`;
-                          return `<td>${pred.pick} <br/><span style="color: ${pred.hit ? 'var(--accent-strong)' : 'var(--danger)'}">${pred.hit ? "✅ Acertou" : "❌ Errou"}</span></td>`;
-                        }).join("")}
+                        <td><strong style="color: var(--accent);">${hits}/8</strong></td>
+                        ${cDetails.map(c => `
+                          <td>
+                            <span style="color: ${c.hit ? 'var(--accent-strong)' : 'var(--danger)'};">
+                              ${c.pick || "-"} ${c.hit ? "✅" : "❌"}
+                            </span>
+                          </td>
+                        `).join("")}
+                        ${Array.from({length: Math.max(0, 8 - cDetails.length)}).map(() => `<td>-</td>`).join("")}
                       </tr>
-                    `).join("")}
+                    `}).join("")}
                   </tbody>
                 </table>
               </div>
