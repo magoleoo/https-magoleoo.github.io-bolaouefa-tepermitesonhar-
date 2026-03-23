@@ -1,6 +1,7 @@
 import {
   competitionSnapshot,
   competitionAssets,
+  knockoutResults as staticKnockoutResults,
   leaguePhaseSnapshot,
   officialSources,
   participantSnapshots,
@@ -38,6 +39,7 @@ const rulesList = document.querySelector("#rules-list");
 const liveSummary = document.querySelector("#live-summary");
 const competitionMark = document.querySelector("#competition-mark");
 const historyTable = document.querySelector("#history-table");
+const hallOfFame = document.querySelector("#hall-of-fame");
 const predictionsGalleryEl = document.querySelector("#predictions-gallery");
 const predictionsConsultationEl = document.querySelector("#predictions-consultation");
 const qfFormsPanel = document.querySelector("#qf-forms-panel");
@@ -91,7 +93,7 @@ function getParticipantById(id) {
   return participants.find((participant) => participant.id === id);
 }
 
-let knockoutResults = [];
+let knockoutResults = [...staticKnockoutResults];
 let activeResultsTab = 'ROUND_OF_16';
 
 window.setResultsTab = (tab) => {
@@ -673,6 +675,25 @@ function renderHistory() {
       `
     )
     .join("");
+
+  const championCounts = winnersHistory.reduce((acc, row) => {
+    if (!row.first) return acc;
+    acc[row.first] = (acc[row.first] || 0) + 1;
+    return acc;
+  }, {});
+
+  hallOfFame.innerHTML = Object.entries(championCounts)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"))
+    .slice(0, 8)
+    .map(
+      ([name, titles]) => `
+        <div class="award">
+          <strong>${name}</strong>
+          <p class="muted">${titles} título${titles > 1 ? "s" : ""} de campeão</p>
+        </div>
+      `
+    )
+    .join("");
 }
 
 function renderRulesPanel() {
@@ -1091,11 +1112,11 @@ window.setConsultTab = function(tab) {
 };
 
 function renderPredictionConsultation() {
-  if (!backtestData || !backtestData.ranking) {
+  if (!backtestData?.participants) {
     predictionsConsultationEl.innerHTML = `
       <article class="rules-card">
         <h3>Consulta dos palpites</h3>
-        <p class="muted">Estou carregando os palpites atualizados da temporada 25/26...</p>
+        <p class="muted">Estou carregando os palpites estruturados do backtest para playoff e oitavas.</p>
       </article>
     `;
     return;
@@ -1109,82 +1130,119 @@ function renderPredictionConsultation() {
     </div>
   `;
 
-  let markup = tabsMarkup;
+  const groupedMatches = {};
+  const groupedClassifications = {};
+  const phaseKey = activeConsultTab === "oitavas" ? "round_of_16" : "playoff";
+  const phaseTitle = activeConsultTab === "oitavas" ? "Oitavas" : "Playoff 1ª fase";
 
-  const buildKnockoutPhase = (phaseKey, phaseTitle) => {
-    let m = "";
-    const matchesMap = {};
-    const classMap = {};
-
-    backtestData.ranking.forEach((r) => {
-      const pName = r.name;
-      const matchDetails = r.breakdown?.match_details || [];
-      matchDetails.filter(md => md.phase === phaseKey).forEach((match) => {
-        if (!matchesMap[match.label]) matchesMap[match.label] = { official: match.official, predictions: [] };
-        matchesMap[match.label].predictions.push({ name: pName, predicted: match.predicted, exact: match.exact_hit, result: match.result_hit });
-      });
-
-      const classDetails = r.breakdown?.class_details || [];
-      classDetails.filter(cd => cd.phase === phaseKey).forEach((c, idx) => {
-        if (!classMap[idx]) classMap[idx] = { official: c.official, predictions: [] };
-        classMap[idx].predictions.push({ name: pName, pick: c.pick, hit: c.hit });
+  Object.entries(backtestData.participants).forEach(([participantName, payload]) => {
+    const phasePayload = payload[phaseKey] || {};
+    (phasePayload.match_details || []).forEach((match) => {
+      if (!groupedMatches[match.label]) {
+        groupedMatches[match.label] = { official: match.official, predictions: [] };
+      }
+      groupedMatches[match.label].predictions.push({
+        name: participantName,
+        predicted: match.predicted || "-",
+        exact: Boolean(match.exact_hit),
+        result: Boolean(match.result_hit),
       });
     });
 
-    if (Object.keys(matchesMap).length > 0) {
-      m += `<section style="margin-bottom: 40px;"><h2 style="margin-bottom: 20px;">${phaseTitle} - Placares</h2><div class="predictions-consultation" style="gap: 20px;">`;
-      Object.entries(matchesMap).forEach(([label, data]) => {
-        m += `
-          <article class="prediction-consult-card">
-            <div class="prediction-consult-header">
-              <div><strong>${label}</strong><p class="muted">Placar Oficial: <strong>${data.official}</strong></p></div>
-              <span class="tag">Jogos</span>
-            </div>
-            <div class="table-wrap">
-              <table class="dashboard-table compact-table">
-                <thead><tr><th>Palpiteiro</th><th>Palpite</th><th>Status</th></tr></thead>
-                <tbody>
-                  ${data.predictions.map(p => `<tr><td><strong>${p.name.charAt(0).toUpperCase() + p.name.slice(1)}</strong></td><td>${p.predicted}</td><td>${p.exact ? '<span class="result-chip exact">Exato</span>' : p.result ? '<span class="result-chip trend">Tendência</span>' : '<span class="result-chip miss">Errou</span>'}</td></tr>`).join("")}
-                </tbody>
-              </table>
-            </div>
-          </article>
-        `;
+    (phasePayload.class_details || []).forEach((item, index) => {
+      const key = `${phaseTitle}-${index + 1}`;
+      if (!groupedClassifications[key]) {
+        groupedClassifications[key] = { official: item.official || "-", predictions: [] };
+      }
+      groupedClassifications[key].predictions.push({
+        name: participantName,
+        pick: item.pick || "-",
+        hit: Boolean(item.hit),
       });
-      m += `</div></section>`;
-    }
-    
-    if (Object.keys(classMap).length > 0) {
-      m += `<section style="margin-bottom: 40px;"><h2 style="margin-bottom: 20px;">${phaseTitle} - Classificados</h2><div class="predictions-consultation" style="gap: 20px;">`;
-      Object.entries(classMap).forEach(([idx, data]) => {
-        m += `
-          <article class="prediction-consult-card">
-            <div class="prediction-consult-header">
-              <div><strong>Vaga ${parseInt(idx)+1}</strong><p class="muted">Oficial: <strong>${data.official || '-'}</strong></p></div>
-            </div>
-            <div class="table-wrap">
-              <table class="dashboard-table compact-table">
-                <thead><tr><th>Palpiteiro</th><th>Palpite</th><th>Status</th></tr></thead>
-                <tbody>
-                  ${data.predictions.map(p => `<tr><td><strong>${p.name}</strong></td><td>${p.pick}</td><td>${p.hit ? '<span class="result-chip exact">Acertou</span>' : '<span class="result-chip miss">Errou</span>'}</td></tr>`).join("")}
-                </tbody>
-              </table>
-            </div>
-          </article>
-        `;
-      });
-      m += `</div></section>`;
-    }
-    return m;
-  };
+    });
+  });
 
-  if (activeConsultTab === 'playoff') {
-    markup += buildKnockoutPhase('PLAYOFF', 'Playoff 1ª fase');
-  } else if (activeConsultTab === 'oitavas') {
-    markup += buildKnockoutPhase('ROUND_OF_16', 'Oitavas de Final');
-  }
+  const matchesMarkup = Object.entries(groupedMatches)
+    .map(
+      ([label, data]) => `
+        <article class="prediction-consult-card">
+          <div class="prediction-consult-header">
+            <div>
+              <strong>${label}</strong>
+              <p class="muted">Placar oficial: <strong>${data.official}</strong></p>
+            </div>
+            <span class="tag">Jogo</span>
+          </div>
+          <div class="table-wrap">
+            <table class="dashboard-table compact-table">
+              <thead>
+                <tr>
+                  <th>Palpiteiro</th>
+                  <th>Palpite</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.predictions
+                  .map(
+                    (prediction) => `
+                      <tr>
+                        <td><strong>${prediction.name}</strong></td>
+                        <td>${prediction.predicted}</td>
+                        <td>${prediction.exact ? '<span class="result-chip exact">Exato</span>' : prediction.result ? '<span class="result-chip trend">Tendência</span>' : '<span class="result-chip miss">Errou</span>'}</td>
+                      </tr>
+                    `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+        </article>
+      `
+    )
+    .join("");
 
-  predictionsConsultationEl.innerHTML = markup;
+  const classMarkup = Object.entries(groupedClassifications)
+    .map(
+      ([slot, data]) => `
+        <article class="prediction-consult-card">
+          <div class="prediction-consult-header">
+            <div>
+              <strong>${slot}</strong>
+              <p class="muted">Classificado oficial: <strong>${data.official}</strong></p>
+            </div>
+            <span class="tag">Classificado</span>
+          </div>
+          <div class="table-wrap">
+            <table class="dashboard-table compact-table">
+              <thead>
+                <tr>
+                  <th>Palpiteiro</th>
+                  <th>Palpite</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.predictions
+                  .map(
+                    (prediction) => `
+                      <tr>
+                        <td><strong>${prediction.name}</strong></td>
+                        <td>${prediction.pick}</td>
+                        <td>${prediction.hit ? '<span class="result-chip exact">Acertou</span>' : '<span class="result-chip miss">Errou</span>'}</td>
+                      </tr>
+                    `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+        </article>
+      `
+    )
+    .join("");
+
+  predictionsConsultationEl.innerHTML = `${tabsMarkup}${matchesMarkup}${classMarkup}`;
 }
 
 function toggleLoginState() {
@@ -1286,7 +1344,7 @@ async function loadMatchesData() {
     }));
   } catch (e) {
     console.error(e);
-    knockoutResults = [];
+    knockoutResults = [...staticKnockoutResults];
   }
 }
 
