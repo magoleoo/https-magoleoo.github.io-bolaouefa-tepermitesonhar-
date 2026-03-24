@@ -69,7 +69,9 @@ def main():
             except:
                 total, p_1a, p_po, p_o8, p_sc = 0, 0, 0, 0, 0
 
-            meta = part_meta.get(name, {})
+            favorito = normalize(ws_rank.cell(row=r, column=13).value)
+            garcom = normalize(ws_rank.cell(row=r, column=14).value)
+            artilheiro = normalize(ws_rank.cell(row=r, column=15).value)
 
             ranking_list.append({
                 "participant_id": slugify(name),
@@ -80,9 +82,9 @@ def main():
                 "round_of_16_points": p_o8,
                 "superclassic_points": p_sc,
                 "hope_solo_hits": 0,
-                "favorite_team": meta.get("favorito", "-"),
-                "scorer_pick": meta.get("artilheiro", "-"),
-                "assist_pick": meta.get("garcom", "-")
+                "favorite_team": favorito if favorito else "-",
+                "scorer_pick": artilheiro if artilheiro else "-",
+                "assist_pick": garcom if garcom else "-"
             })
 
     # Sort Ranking by Total
@@ -209,6 +211,26 @@ def main():
         if fixtures_1a:
             phases["LEAGUE"] = {"fixtures": fixtures_1a}
 
+
+    # Calculate Hope Solo Hits
+    hope_solos = {p["name"]: 0 for p in ranking_list}
+    for phase_key, phase_data in phases.items():
+        for fixture in phase_data["fixtures"]:
+            pick_counts = {}
+            for pk in fixture["picks"]:
+                pstr = pk["pick"]
+                pick_counts[pstr] = pick_counts.get(pstr, 0) + 1
+            for pk in fixture["picks"]:
+                pts = pk["rank_value"]
+                if pts and pts != "" and pts != "0" and pts != "0.0":
+                    try:
+                        if float(pts) > 0 and pick_counts[pk["pick"]] == 1:
+                            hope_solos[pk["participant"]] += 1
+                    except:
+                        pass
+                        
+    for r in ranking_list:
+        r["hope_solo_hits"] = hope_solos.get(r["name"], 0)
 
     # OUTPUT JSON
     out_dir = project_root / "api"
