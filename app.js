@@ -470,7 +470,7 @@ function renderMatches() {
            t2 = fixture.label.split(' x ')[1];
         }
 
-        return \`
+        return `
         <article class="match-card">
           <div class="match-header" style="justify-content: center;">
             <span class="tag">Finalizado</span>
@@ -480,14 +480,14 @@ function renderMatches() {
               <strong>${t1}</strong>
               <div class="score">${h_score}</div>
             </div>
-            ${t2 ? \`
+            ${t2 ? `
             <div class="team">
               <div class="score">${a_score}</div>
               <strong>${t2}</strong>
             </div>
-            \` : ''}
+            ` : ''}
           </div>
-        </article>\`
+        </article>`
       }).join('')}
     </div>
   `;
@@ -1227,6 +1227,8 @@ logoutButton.addEventListener("click", () => {
 });
 
 skipLoginButton.addEventListener("click", () => {
+  console.log("==> ENTRAR SEM IDENTIFICAR CLICADO!");
+  alert("CLICADO!");
   currentUserId = "";
   localStorage.removeItem(storageKeys.session);
   localStorage.setItem("ucl-bolao-guest", "1");
@@ -1249,6 +1251,7 @@ tabHistory.addEventListener("click", () => setActiveTab("history"));
 tabRules.addEventListener("click", () => setActiveTab("rules"));
 tabSubmitQf.addEventListener("click", () => setActiveTab("submit-qf"));
 
+console.log(">>> APP.JS CARREGADO NO FINAL DO ARQUIVO! ATRIBUINDO LISTENERS...");
 populateLoginSelect();
 renderRules();
 renderApp();
