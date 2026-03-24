@@ -1108,6 +1108,66 @@ window.setConsultTab = function(tab) {
   renderPredictionConsultation();
 };
 
+function renderMatches() {
+  const container = document.getElementById("results-container");
+  if (!container || !backtestData?.phases) return;
+
+  let sourceFixtures = [];
+  if (activePhaseFilter === 'league') {
+    sourceFixtures = backtestData.phases['LEAGUE']?.fixtures || [];
+  } else if (activePhaseFilter === 'playoffs') {
+    sourceFixtures = backtestData.phases['PLAYOFF']?.fixtures || [];
+  } else if (activePhaseFilter === 'oitavas') {
+    sourceFixtures = backtestData.phases['ROUND_OF_16']?.fixtures || [];
+  }
+
+  const finishedFixtures = sourceFixtures.filter(f => f.official && f.official.trim() !== "" && f.official !== "-");
+
+  container.innerHTML = `
+    <div style="margin-bottom: 24px; text-align: center;">
+      <h3 style="margin-bottom: 8px;">Resultados Processados</h3>
+      <p class="muted">${finishedFixtures.length} jogos computados nesta fase</p>
+    </div>
+    <div class="matches-grid">
+      ${finishedFixtures.map(fixture => {
+        let h_score = '';
+        let a_score = '';
+        if (fixture.official.includes('x')) {
+          h_score = fixture.official.split('x')[0] || '';
+          a_score = fixture.official.split('x')[1] || '';
+        } else {
+          h_score = fixture.official;
+        }
+        
+        let t1 = fixture.label;
+        let t2 = '';
+        if (fixture.label.includes(' x ')) {
+           t1 = fixture.label.split(' x ')[0];
+           t2 = fixture.label.split(' x ')[1];
+        }
+
+        return `
+        <article class="match-card">
+          <div class="match-header" style="justify-content: center;">
+            <span class="tag">Finalizado</span>
+          </div>
+          <div class="match-teams">
+            <div class="team">
+              <strong>${t1}</strong>
+              <div class="score">${h_score}</div>
+            </div>
+            ${t2 ? `
+            <div class="team">
+              <div class="score">${a_score}</div>
+              <strong>${t2}</strong>
+            </div>
+            ` : ''}
+          </div>
+        </article>`
+      }).join('')}
+    </div>
+  `;
+}
 function renderPredictionConsultation() {
   const container = document.getElementById("picks-container");
   if (!container) return;

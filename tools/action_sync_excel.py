@@ -216,18 +216,28 @@ def main():
     hope_solos = {p["name"]: 0 for p in ranking_list}
     for phase_key, phase_data in phases.items():
         for fixture in phase_data["fixtures"]:
-            pick_counts = {}
-            for pk in fixture["picks"]:
-                pstr = pk["pick"]
-                pick_counts[pstr] = pick_counts.get(pstr, 0) + 1
-            for pk in fixture["picks"]:
-                pts = pk["rank_value"]
-                if pts and pts != "" and pts != "0" and pts != "0.0":
+            off = fixture.get("official", "")
+            if not off or off == "-" or off == "None": continue
+
+            def is_hit(p, o):
+                if not p or p == "None": return False
+                if p == o: return True
+                if "x" in p and "x" in o:
                     try:
-                        if float(pts) > 0 and pick_counts[pk["pick"]] == 1:
-                            hope_solos[pk["participant"]] += 1
-                    except:
-                        pass
+                        ph, pa = map(int, p.split("x"))
+                        oh, oa = map(int, o.split("x"))
+                        if (ph > pa and oh > oa) or (ph < pa and oh < oa) or (ph == pa and oh == oa):
+                            return True
+                    except: pass
+                return False
+
+            correct_picks = []
+            for pk in fixture["picks"]:
+                if is_hit(pk["pick"], off):
+                    correct_picks.append(pk["participant"])
+            
+            if len(correct_picks) == 1:
+                hope_solos[correct_picks[0]] = hope_solos.get(correct_picks[0], 0) + 1
                         
     for r in ranking_list:
         r["hope_solo_hits"] = hope_solos.get(r["name"], 0)

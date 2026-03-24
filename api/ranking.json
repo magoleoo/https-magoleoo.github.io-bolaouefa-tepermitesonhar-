@@ -9,7 +9,7 @@
       "playoff_points": 14.0,
       "round_of_16_points": 56.0,
       "superclassic_points": 6.8,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 1,
       "favorite_team": "Real Madrid",
       "scorer_pick": "Erling Haaland",
       "assist_pick": "Vitinha"
@@ -22,7 +22,7 @@
       "playoff_points": 20.5,
       "round_of_16_points": 51.0,
       "superclassic_points": 1.7,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 1,
       "favorite_team": "Barcelona",
       "scorer_pick": "João Pedro",
       "assist_pick": "Lamine Yamal"
@@ -48,7 +48,7 @@
       "playoff_points": 16.0,
       "round_of_16_points": 52.0,
       "superclassic_points": 3.4,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 1,
       "favorite_team": "Liverpool",
       "scorer_pick": "Harry Kane",
       "assist_pick": "Vinícius Jr."
@@ -113,7 +113,7 @@
       "playoff_points": 11.0,
       "round_of_16_points": 40.0,
       "superclassic_points": 6.8,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 1,
       "favorite_team": "Barcelona",
       "scorer_pick": "Kylian Mbappé",
       "assist_pick": "Raphinha"
@@ -139,7 +139,7 @@
       "playoff_points": 16.0,
       "round_of_16_points": 41.0,
       "superclassic_points": 3.4,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 2,
       "favorite_team": "Liverpool",
       "scorer_pick": "Raphinha",
       "assist_pick": "Lamine Yamal"
@@ -152,7 +152,7 @@
       "playoff_points": 12.0,
       "round_of_16_points": 39.0,
       "superclassic_points": 8.5,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 2,
       "favorite_team": "Barcelona",
       "scorer_pick": "Robert Lewandowski",
       "assist_pick": "Eberechi Eze"
@@ -204,7 +204,7 @@
       "playoff_points": 15.5,
       "round_of_16_points": 39.0,
       "superclassic_points": 5.1,
-      "hope_solo_hits": 0,
+      "hope_solo_hits": 2,
       "favorite_team": "Paris Saint-Germain",
       "scorer_pick": "Ousmane Dembélé",
       "assist_pick": "Raphinha"
