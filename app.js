@@ -1101,9 +1101,6 @@ function renderPredictionsGallery() {
         </article>
       `
     )
-    .join("");
-}
-
 let activeConsultTab = 'playoff';
 
 window.setConsultTab = function(tab) {
@@ -1112,87 +1109,19 @@ window.setConsultTab = function(tab) {
 };
 
 function renderPredictionConsultation() {
-  if (!backtestData?.participants) {
-    predictionsConsultationEl.innerHTML = `
-      <article class="rules-card">
-        <h3>Consulta dos palpites</h3>
-        <p class="muted">Estou carregando os palpites estruturados do backtest para playoff e oitavas.</p>
-      </article>
-    `;
+  const container = document.getElementById("picks-container");
+  if (!container) return;
+  
+  if (!backtestData?.phases) {
+    container.innerHTML = `
+      <div class="text-center muted" style="padding: 3rem;">
+        Aguardando estruturação das tabelas de palpites oficiais...
+      </div>`;
     return;
   }
 
   const tabsMarkup = `
     <div class="tabs-bar" style="margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 12px; overflow-x: auto;">
-      <button class="tab-button ${activeConsultTab === 'playoff' ? 'is-active' : ''}" onclick="setConsultTab('playoff')">Playoffs</button>
-      <button class="tab-button ${activeConsultTab === 'oitavas' ? 'is-active' : ''}" onclick="setConsultTab('oitavas')">Oitavas</button>
-      <button class="tab-button ${activeConsultTab === 'class8' ? 'is-active' : ''}" onclick="setConsultTab('class8')" style="display:none;">8 Qualificados</button>
-    </div>
-  `;
-
-  const groupedMatches = {};
-  const groupedClassifications = {};
-  const phaseKey = activeConsultTab === "oitavas" ? "round_of_16" : "playoff";
-  const phaseTitle = activeConsultTab === "oitavas" ? "Oitavas" : "Playoff 1ª fase";
-
-  Object.entries(backtestData.participants).forEach(([participantName, payload]) => {
-    const phasePayload = payload[phaseKey] || {};
-    (phasePayload.match_details || []).forEach((match) => {
-      if (!groupedMatches[match.label]) {
-        groupedMatches[match.label] = { official: match.official, predictions: [] };
-      }
-      groupedMatches[match.label].predictions.push({
-        name: participantName,
-        predicted: match.predicted || "-",
-        exact: Boolean(match.exact_hit),
-        result: Boolean(match.result_hit),
-      });
-    });
-
-    (phasePayload.class_details || []).forEach((item, index) => {
-      const key = `${phaseTitle}-${index + 1}`;
-      if (!groupedClassifications[key]) {
-        groupedClassifications[key] = { official: item.official || "-", predictions: [] };
-      }
-      groupedClassifications[key].predictions.push({
-        name: participantName,
-        pick: item.pick || "-",
-        hit: Boolean(item.hit),
-      });
-    });
-  });
-
-  const matchesMarkup = Object.entries(groupedMatches)
-    .map(
-      ([label, data]) => `
-        <article class="prediction-consult-card">
-          <div class="prediction-consult-header">
-            <div>
-              <strong>${label}</strong>
-              <p class="muted">Placar oficial: <strong>${data.official}</strong></p>
-            </div>
-            <span class="tag">Jogo</span>
-          </div>
-          <div class="table-wrap">
-            <table class="dashboard-table compact-table">
-              <thead>
-                <tr>
-                  <th>Palpiteiro</th>
-                  <th>Palpite</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.predictions
-                  .map(
-                    (prediction) => `
-                      <tr>
-                        <td><strong>${prediction.name}</strong></td>
-                        <td>${prediction.predicted}</td>
-                        <td>${prediction.exact ? '<span class="result-chip exact">Exato</span>' : prediction.result ? '<span class="result-chip trend">Tendência</span>' : '<span class="result-chip miss">Errou</span>'}</td>
-                      </tr>
-                    `
-                  )
                   .join("")}
               </tbody>
             </table>
