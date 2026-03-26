@@ -1099,64 +1099,119 @@ let activePredictionsFilter = "Matchday 1";
 function renderPredictionConsultation() {
   const container = document.getElementById("predictions-consultation");
   if (!container) return;
-        Aguardando estruturação das tabelas de palpites oficiais...
-      </div>`;
+
+  const validPhases = [
+    { id: "LEAGUE", label: "Primeira Fase" },
+    { id: "PLAYOFF", label: "Playoffs" },
+    { id: "ROUND_OF_16", label: "Oitavas" },
+    { id: "QUARTER_FINALS", label: "Quartas" },
+    { id: "SEMI_FINALS", label: "Semis" },
+    { id: "FINAL", label: "Final" }
+  ];
+
+  const leagueRounds = Array.from({length: 8}, (_, i) => `Matchday ${i+1}`);
+
+  let phaseTabsHTML = `<div class="subtabs" style="margin-bottom:1rem; border-bottom:1px solid var(--clr-surface-200); padding-bottom:0.5rem; display:flex; gap:1rem; overflow-x:auto;">`;
+  validPhases.forEach(ph => {
+    const act = ph.id === activePredictionsPhase ? 'style="color:var(--clr-primary-400); font-weight:bold; border-bottom:2px solid var(--clr-primary-400); padding-bottom:8px;"' : 'style="color:var(--clr-text-muted); cursor:pointer;"';
+    phaseTabsHTML += `<div onclick="window.setPredictPhase('${ph.id}')" ${act}>${ph.label}</div>`;
+  });
+  phaseTabsHTML += `</div>`;
+
+  let secondaryTabsHTML = '';
+  if (activePredictionsPhase === "LEAGUE") {
+    secondaryTabsHTML = `<div class="subtabs" style="background:var(--clr-surface-200); border-radius:8px; padding:0.5rem; margin-bottom:1rem; display:flex; gap:1rem; overflow-x:auto;">`;
+    leagueRounds.forEach(r => {
+      const badgeText = r.replace("Matchday", "Rodada");
+      const act = r === activePredictionsFilter ? 'style="background:var(--clr-primary-500); color:white; padding:4px 12px; border-radius:4px; cursor:pointer;"' : 'style="color:var(--clr-text-muted); padding:4px 12px; cursor:pointer;"';
+      secondaryTabsHTML += `<div onclick="window.setPredictFilter('${r}')" ${act}>${badgeText}</div>`;
+    });
+    secondaryTabsHTML += `</div>`;
+  }
+
+  let srcFixtures = [];
+  if (activePredictionsPhase === "LEAGUE") {
+    const rawMatches = backtestData?.phases?.[activePredictionsPhase]?.fixtures || [];
+    srcFixtures = rawMatches.filter(f => f.matchday === activePredictionsFilter.replace("Matchday", "Machtday"));
+  } else {
+    srcFixtures = backtestData?.phases?.[activePredictionsPhase]?.fixtures || [];
+  }
+
+  if (!srcFixtures.length) {
+    container.innerHTML = phaseTabsHTML + secondaryTabsHTML + `<div class="empty-state">Nenhum palpite registrado nesta etapa ainda.</div>`;
     return;
   }
 
-  const tabsMarkup = `
-    <div class="tabs-bar" style="margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 12px; overflow-x: auto;">
-      <button class="tab-button ${activeConsultTab === 'playoff' ? 'is-active' : ''}" onclick="setConsultTab('playoff')">Ligas</button>
-      <button class="tab-button ${activeConsultTab === 'oitavas' ? 'is-active' : ''}" onclick="setConsultTab('oitavas')">Playoffs</button>
-      <button class="tab-button ${activeConsultTab === 'class8' ? 'is-active' : ''}" onclick="setConsultTab('class8')">Oitavas</button>
-    </div>
-  `;
+  const matchCols = srcFixtures; 
+  const participantsSet = new Set();
+  matchCols.forEach(m => {
+    (m.picks || []).forEach(p => participantsSet.add(p.participant));
+  });
+  const participants = Array.from(participantsSet).sort();
 
-  let phaseKey = 'LEAGUE';
-  if (activeConsultTab === 'oitavas') phaseKey = 'PLAYOFF';
-  else if (activeConsultTab === 'class8') phaseKey = 'ROUND_OF_16';
-
-  const phaseData = backtestData.phases[phaseKey] || { fixtures: [] };
-
-  const matchesMarkup = phaseData.fixtures.map((fixture) => `
-    <article class="prediction-consult-card">
-      <div class="prediction-consult-header">
-        <div>
-          <strong>${fixture.label}</strong>
-          <p class="muted">Placar oficial: <strong>${fixture.official || '-'}</strong></p>
-        </div>
-        <span class="tag">Jogo</span>
-      </div>
-      <div class="table-wrap">
-        <table class="dashboard-table compact-table">
-          <thead>
-            <tr>
-              <th>Palpiteiro</th>
-              <th>Palpite</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${fixture.picks.map(pick => `
-              <tr>
-                <td><strong>${pick.participant}</strong></td>
-                <td>${pick.pick}</td>
-                <td><span class="result-chip ${pick.rank_value && parseFloat(pick.rank_value) > 3 ? 'exact' : (pick.rank_value ? 'trend' : '')}">${pick.rank_value ? pick.rank_value + ' pts' : '-'}</span></td>
-              </tr>
+  let tableConfig = `
+    <style>
+      .predictions-matrix-table { width: 100%; border-collapse: collapse; text-align: center; }
+      .predictions-matrix-table th { background: var(--clr-surface-200); padding: 1rem; border: 1px solid var(--clr-surface-300); font-weight:500; font-size:0.85rem; }
+      .predictions-matrix-table td { padding: 1rem; border: 1px solid var(--clr-surface-300); }
+      .predictions-matrix-table td.participant-name { text-align: left; font-weight: bold; background: var(--clr-surface-100); position: sticky; left: 0; z-index: 2; width: 150px;}
+      .hit-cell { background: rgba(34,197,94,0.15) !important; color: #4ade80 !important; font-weight: bold; }
+      .miss-cell { background: var(--clr-surface-100); color: var(--clr-text-muted); }
+      .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; border: 1px solid var(--clr-surface-300); }
+    </style>
+    <div class="table-wrapper">
+      <table class="predictions-matrix-table">
+        <thead>
+          <tr>
+            <th class="participant-name">Participante</th>
+            ${matchCols.map(m => `
+              <th>
+                <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">${m.matchday && m.matchday.includes("Machtday") ? m.matchday.replace("Machtday", "Rodada") : "Jogo Oficial"}</div>
+                <div style="margin-bottom:8px;">${m.label}</div>
+                <div style="display:inline-block; background:var(--clr-surface-400); color:white; padding:2px 8px; border-radius:12px;">${m.official || "-"}</div>
+              </th>
             `).join("")}
-          </tbody>
-        </table>
-      </div>
-    </article>
-  `).join("");
-
-  container.innerHTML = `
-    ${tabsMarkup}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
-      ${matchesMarkup || '<p class="muted">Nenhum jogo carregado para esta fase.</p>'}
+          </tr>
+        </thead>
+        <tbody>
+          ${participants.map(part => `
+            <tr>
+              <td class="participant-name">
+                 <div style="display:flex; align-items:center; gap:8px;">
+                   <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${part.charAt(0)}</div>
+                   ${part}
+                 </div>
+              </td>
+              ${matchCols.map(m => {
+                const pickObj = (m.picks || []).find(p => p.participant === part);
+                const pickStr = pickObj ? pickObj.pick : "-";
+                let isHit = false;
+                if (m.official && m.official !== "-") {
+                  if (pickStr.toLowerCase() === m.official.toLowerCase()) isHit = true;
+                }
+                const cellClass = isHit ? "hit-cell" : "miss-cell";
+                return `<td class="${pickStr === "-" ? "" : cellClass}">${pickStr}</td>`;
+              }).join("")}
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
     </div>
   `;
+
+  container.innerHTML = phaseTabsHTML + secondaryTabsHTML + tableConfig;
 }
+
+window.setPredictPhase = (ph) => {
+  activePredictionsPhase = ph;
+  if(ph === "LEAGUE") activePredictionsFilter = "Matchday 1";
+  renderPredictionConsultation();
+};
+
+window.setPredictFilter = (f) => {
+  activePredictionsFilter = f;
+  renderPredictionConsultation();
+};
 
 function toggleLoginState() {
   loginModal.classList.toggle("hidden", localStorage.getItem("ucl-bolao-guest") === "1" || Boolean(currentUserId));
