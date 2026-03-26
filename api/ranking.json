@@ -1798,7 +1798,10 @@
     "LEAGUE": {
       "fixtures": [
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "PSV Eindhoven x Union Saint-Gilloise",
+          "home": "PSV Eindhoven",
+          "away": "Union Saint-Gilloise",
           "official": "Union Saint-Gilloise",
           "picks": [
             {
@@ -2014,7 +2017,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Athletic Bilbao x Arsenal",
+          "home": "Athletic Bilbao",
+          "away": "Arsenal",
           "official": "Arsenal",
           "picks": [
             {
@@ -2230,7 +2236,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Real Madrid x Olympique de Marselha",
+          "home": "Real Madrid",
+          "away": "Olympique de Marselha",
           "official": "Real Madrid",
           "picks": [
             {
@@ -2446,7 +2455,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Benfica x Qarabag",
+          "home": "Benfica",
+          "away": "Qarabag",
           "official": "Qarabag",
           "picks": [
             {
@@ -2662,7 +2674,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Juventus x Borussia Dortmund",
+          "home": "Juventus",
+          "away": "Borussia Dortmund",
           "official": "Empate",
           "picks": [
             {
@@ -2878,7 +2893,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Tottenham x Villarreal",
+          "home": "Tottenham",
+          "away": "Villarreal",
           "official": "Tottenham",
           "picks": [
             {
@@ -3094,7 +3112,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Olympiacos x Pafos",
+          "home": "Olympiacos",
+          "away": "Pafos",
           "official": "Empate",
           "picks": [
             {
@@ -3310,7 +3331,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Slavia Praga x Bodö/Glimt",
+          "home": "Slavia Praga",
+          "away": "Bodö/Glimt",
           "official": "Empate",
           "picks": [
             {
@@ -3526,7 +3550,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Paris Saint-Germain x Atalanta",
+          "home": "Paris Saint-Germain",
+          "away": "Atalanta",
           "official": "Paris Saint-Germain",
           "picks": [
             {
@@ -3742,7 +3769,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Bayern de Munique x Chelsea",
+          "home": "Bayern de Munique",
+          "away": "Chelsea",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -3958,7 +3988,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Liverpool x Atlético de Madrid",
+          "home": "Liverpool",
+          "away": "Atlético de Madrid",
           "official": "Liverpool",
           "picks": [
             {
@@ -4174,7 +4207,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Ajax x Internazionale",
+          "home": "Ajax",
+          "away": "Internazionale",
           "official": "Internazionale",
           "picks": [
             {
@@ -4390,7 +4426,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Club Brugge x Monaco",
+          "home": "Club Brugge",
+          "away": "Monaco",
           "official": "Club Brugge",
           "picks": [
             {
@@ -4606,7 +4645,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Copenhagen x Bayer Leverkusen",
+          "home": "Copenhagen",
+          "away": "Bayer Leverkusen",
           "official": "Empate",
           "picks": [
             {
@@ -4822,7 +4864,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Manchester City x Napoli",
+          "home": "Manchester City",
+          "away": "Napoli",
           "official": "Manchester City",
           "picks": [
             {
@@ -5038,7 +5083,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Eintracht Frankfurt x Galatasaray",
+          "home": "Eintracht Frankfurt",
+          "away": "Galatasaray",
           "official": "Eintracht Frankfurt",
           "picks": [
             {
@@ -5254,7 +5302,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Sporting x Kairat",
+          "home": "Sporting",
+          "away": "Kairat",
           "official": "Sporting",
           "picks": [
             {
@@ -5470,7 +5521,10 @@
           ]
         },
         {
-          "label": "Machtday 1",
+          "matchday": "Machtday 1",
+          "label": "Newcastle x Barcelona",
+          "home": "Newcastle",
+          "away": "Barcelona",
           "official": "Barcelona",
           "picks": [
             {
@@ -5686,7 +5740,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Atalanta x Club Brugge",
+          "home": "Atalanta",
+          "away": "Club Brugge",
           "official": "Atalanta",
           "picks": [
             {
@@ -5902,7 +5959,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Kairat x Real Madrid",
+          "home": "Kairat",
+          "away": "Real Madrid",
           "official": "Real Madrid",
           "picks": [
             {
@@ -6118,7 +6178,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Internazionale x Slavia Praga",
+          "home": "Internazionale",
+          "away": "Slavia Praga",
           "official": "Internazionale",
           "picks": [
             {
@@ -6334,7 +6397,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Chelsea x Benfica",
+          "home": "Chelsea",
+          "away": "Benfica",
           "official": "Chelsea",
           "picks": [
             {
@@ -6550,7 +6616,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Atlético de Madrid x Eintracht Frankfurt",
+          "home": "Atlético de Madrid",
+          "away": "Eintracht Frankfurt",
           "official": "Atlético de Madrid",
           "picks": [
             {
@@ -6766,7 +6835,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Bodö/Glimt x Tottenham",
+          "home": "Bodö/Glimt",
+          "away": "Tottenham",
           "official": "Empate",
           "picks": [
             {
@@ -6982,7 +7054,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Olympique de Marselha x Ajax",
+          "home": "Olympique de Marselha",
+          "away": "Ajax",
           "official": "Olympique de Marselha",
           "picks": [
             {
@@ -7198,7 +7273,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Galatasaray x Liverpool",
+          "home": "Galatasaray",
+          "away": "Liverpool",
           "official": "Galatasaray",
           "picks": [
             {
@@ -7414,7 +7492,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Pafos x Bayern de Munique",
+          "home": "Pafos",
+          "away": "Bayern de Munique",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -7630,7 +7711,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Union Saint-Gilloise x Newcastle",
+          "home": "Union Saint-Gilloise",
+          "away": "Newcastle",
           "official": "Newcastle",
           "picks": [
             {
@@ -7846,7 +7930,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Qarabag x Copenhagen",
+          "home": "Qarabag",
+          "away": "Copenhagen",
           "official": "Qarabag",
           "picks": [
             {
@@ -8062,7 +8149,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Arsenal x Olympiacos",
+          "home": "Arsenal",
+          "away": "Olympiacos",
           "official": "Arsenal",
           "picks": [
             {
@@ -8278,7 +8368,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Bayer Leverkusen x PSV Eindhoven",
+          "home": "Bayer Leverkusen",
+          "away": "PSV Eindhoven",
           "official": "Empate",
           "picks": [
             {
@@ -8494,7 +8587,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Villarreal x Juventus",
+          "home": "Villarreal",
+          "away": "Juventus",
           "official": "Empate",
           "picks": [
             {
@@ -8710,7 +8806,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Napoli x Sporting",
+          "home": "Napoli",
+          "away": "Sporting",
           "official": "Napoli",
           "picks": [
             {
@@ -8926,7 +9025,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Monaco x Manchester City",
+          "home": "Monaco",
+          "away": "Manchester City",
           "official": "Empate",
           "picks": [
             {
@@ -9142,7 +9244,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Borussia Dortmund x Athletic Bilbao",
+          "home": "Borussia Dortmund",
+          "away": "Athletic Bilbao",
           "official": "Borussia Dortmund",
           "picks": [
             {
@@ -9358,7 +9463,10 @@
           ]
         },
         {
-          "label": "Machtday 2",
+          "matchday": "Machtday 2",
+          "label": "Barcelona x Paris Saint-Germain",
+          "home": "Barcelona",
+          "away": "Paris Saint-Germain",
           "official": "Paris Saint-Germain",
           "picks": [
             {
@@ -9574,7 +9682,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Barcelona x Olympiacos",
+          "home": "Barcelona",
+          "away": "Olympiacos",
           "official": "Barcelona",
           "picks": [
             {
@@ -9790,7 +9901,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Kairat x Pafos",
+          "home": "Kairat",
+          "away": "Pafos",
           "official": "Empate",
           "picks": [
             {
@@ -10006,7 +10120,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Arsenal x Atlético de Madrid",
+          "home": "Arsenal",
+          "away": "Atlético de Madrid",
           "official": "Arsenal",
           "picks": [
             {
@@ -10222,7 +10339,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Bayer Leverkusen x Paris Saint-Germain",
+          "home": "Bayer Leverkusen",
+          "away": "Paris Saint-Germain",
           "official": "Paris Saint-Germain",
           "picks": [
             {
@@ -10438,7 +10558,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Villarreal x Manchester City",
+          "home": "Villarreal",
+          "away": "Manchester City",
           "official": "Manchester City",
           "picks": [
             {
@@ -10654,7 +10777,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "PSV Eindhoven x Napoli",
+          "home": "PSV Eindhoven",
+          "away": "Napoli",
           "official": "PSV Eindhoven",
           "picks": [
             {
@@ -10870,7 +10996,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Copenhagen x Borussia Dortmund",
+          "home": "Copenhagen",
+          "away": "Borussia Dortmund",
           "official": "Borussia Dortmund",
           "picks": [
             {
@@ -11086,7 +11215,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Union Saint-Gilloise x Internazionale",
+          "home": "Union Saint-Gilloise",
+          "away": "Internazionale",
           "official": "Internazionale",
           "picks": [
             {
@@ -11302,7 +11434,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Newcastle x Benfica",
+          "home": "Newcastle",
+          "away": "Benfica",
           "official": "Newcastle",
           "picks": [
             {
@@ -11518,7 +11653,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Galatasaray x Bodö/Glimt",
+          "home": "Galatasaray",
+          "away": "Bodö/Glimt",
           "official": "Galatasaray",
           "picks": [
             {
@@ -11734,7 +11872,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Athletic Bilbao x Qarabag",
+          "home": "Athletic Bilbao",
+          "away": "Qarabag",
           "official": "Athletic Bilbao",
           "picks": [
             {
@@ -11950,7 +12091,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Chelsea x Ajax",
+          "home": "Chelsea",
+          "away": "Ajax",
           "official": "Chelsea",
           "picks": [
             {
@@ -12166,7 +12310,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Atalanta x Slavia Praga",
+          "home": "Atalanta",
+          "away": "Slavia Praga",
           "official": "Empate",
           "picks": [
             {
@@ -12382,7 +12529,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Eintracht Frankfurt x Liverpool",
+          "home": "Eintracht Frankfurt",
+          "away": "Liverpool",
           "official": "Liverpool",
           "picks": [
             {
@@ -12598,7 +12748,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Sporting x Olympique de Marselha",
+          "home": "Sporting",
+          "away": "Olympique de Marselha",
           "official": "Sporting",
           "picks": [
             {
@@ -12814,7 +12967,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Monaco x Tottenham",
+          "home": "Monaco",
+          "away": "Tottenham",
           "official": "Empate",
           "picks": [
             {
@@ -13030,7 +13186,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Real Madrid x Juventus",
+          "home": "Real Madrid",
+          "away": "Juventus",
           "official": "Real Madrid",
           "picks": [
             {
@@ -13246,7 +13405,10 @@
           ]
         },
         {
-          "label": "Machtday 3",
+          "matchday": "Machtday 3",
+          "label": "Bayern de Munique x Club Brugge",
+          "home": "Bayern de Munique",
+          "away": "Club Brugge",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -13462,7 +13624,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Napoli x Eintracht Frankfurt",
+          "home": "Napoli",
+          "away": "Eintracht Frankfurt",
           "official": "Empate",
           "picks": [
             {
@@ -13678,7 +13843,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Slavia Praga x Arsenal",
+          "home": "Slavia Praga",
+          "away": "Arsenal",
           "official": "Arsenal",
           "picks": [
             {
@@ -13894,7 +14062,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Paris Saint-Germain x Bayern de Munique",
+          "home": "Paris Saint-Germain",
+          "away": "Bayern de Munique",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -14110,7 +14281,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Liverpool x Real Madrid",
+          "home": "Liverpool",
+          "away": "Real Madrid",
           "official": "Liverpool",
           "picks": [
             {
@@ -14326,7 +14500,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Atlético de Madrid x Union Saint-Gilloise",
+          "home": "Atlético de Madrid",
+          "away": "Union Saint-Gilloise",
           "official": "Atlético de Madrid",
           "picks": [
             {
@@ -14542,7 +14719,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Juventus x Sporting",
+          "home": "Juventus",
+          "away": "Sporting",
           "official": "Empate",
           "picks": [
             {
@@ -14758,7 +14938,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Tottenham x Copenhagen",
+          "home": "Tottenham",
+          "away": "Copenhagen",
           "official": "Tottenham",
           "picks": [
             {
@@ -14974,7 +15157,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Olympiacos x PSV Eindhoven",
+          "home": "Olympiacos",
+          "away": "PSV Eindhoven",
           "official": "Empate",
           "picks": [
             {
@@ -15190,7 +15376,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Bodö/Glimt x Monaco",
+          "home": "Bodö/Glimt",
+          "away": "Monaco",
           "official": "Monaco",
           "picks": [
             {
@@ -15406,7 +15595,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Qarabag x Chelsea",
+          "home": "Qarabag",
+          "away": "Chelsea",
           "official": "Empate",
           "picks": [
             {
@@ -15622,7 +15814,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Pafos x Villarreal",
+          "home": "Pafos",
+          "away": "Villarreal",
           "official": "Pafos",
           "picks": [
             {
@@ -15838,7 +16033,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Manchester City x Borussia Dortmund",
+          "home": "Manchester City",
+          "away": "Borussia Dortmund",
           "official": "Manchester City",
           "picks": [
             {
@@ -16054,7 +16252,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Internazionale x Kairat",
+          "home": "Internazionale",
+          "away": "Kairat",
           "official": "Internazionale",
           "picks": [
             {
@@ -16270,7 +16471,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Benfica x Bayer Leverkusen",
+          "home": "Benfica",
+          "away": "Bayer Leverkusen",
           "official": "Bayer Leverkusen",
           "picks": [
             {
@@ -16486,7 +16690,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Club Brugge x Barcelona",
+          "home": "Club Brugge",
+          "away": "Barcelona",
           "official": "Empate",
           "picks": [
             {
@@ -16702,7 +16909,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Ajax x Galatasaray",
+          "home": "Ajax",
+          "away": "Galatasaray",
           "official": "Galatasaray",
           "picks": [
             {
@@ -16918,7 +17128,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Olympique de Marselha x Atalanta",
+          "home": "Olympique de Marselha",
+          "away": "Atalanta",
           "official": "Atalanta",
           "picks": [
             {
@@ -17134,7 +17347,10 @@
           ]
         },
         {
-          "label": "Machtday 4",
+          "matchday": "Machtday 4",
+          "label": "Newcastle x Athletic Bilbao",
+          "home": "Newcastle",
+          "away": "Athletic Bilbao",
           "official": "Newcastle",
           "picks": [
             {
@@ -17350,7 +17566,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Ajax x Benfica",
+          "home": "Ajax",
+          "away": "Benfica",
           "official": "Benfica",
           "picks": [
             {
@@ -17566,7 +17785,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Galatasaray x Union Saint-Gilloise",
+          "home": "Galatasaray",
+          "away": "Union Saint-Gilloise",
           "official": "Union Saint-Gilloise",
           "picks": [
             {
@@ -17782,7 +18004,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Manchester City x Bayer Leverkusen",
+          "home": "Manchester City",
+          "away": "Bayer Leverkusen",
           "official": "Bayer Leverkusen",
           "picks": [
             {
@@ -17998,7 +18223,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Chelsea x Barcelona",
+          "home": "Chelsea",
+          "away": "Barcelona",
           "official": "Chelsea",
           "picks": [
             {
@@ -18214,7 +18442,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Borussia Dortmund x Villarreal",
+          "home": "Borussia Dortmund",
+          "away": "Villarreal",
           "official": "Borussia Dortmund",
           "picks": [
             {
@@ -18430,7 +18661,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Napoli x Qarabag",
+          "home": "Napoli",
+          "away": "Qarabag",
           "official": "Napoli",
           "picks": [
             {
@@ -18646,7 +18880,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Slavia Praga x Athletic Bilbao",
+          "home": "Slavia Praga",
+          "away": "Athletic Bilbao",
           "official": "Empate",
           "picks": [
             {
@@ -18862,7 +19099,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Bodö/Glimt x Juventus",
+          "home": "Bodö/Glimt",
+          "away": "Juventus",
           "official": "Juventus",
           "picks": [
             {
@@ -19078,7 +19318,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Olympique de Marselha x Newcastle",
+          "home": "Olympique de Marselha",
+          "away": "Newcastle",
           "official": "Olympique de Marselha",
           "picks": [
             {
@@ -19294,7 +19537,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Copenhagen x Kairat",
+          "home": "Copenhagen",
+          "away": "Kairat",
           "official": "Copenhagen",
           "picks": [
             {
@@ -19510,7 +19756,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Pafos x Monaco",
+          "home": "Pafos",
+          "away": "Monaco",
           "official": "Empate",
           "picks": [
             {
@@ -19726,7 +19975,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Paris Saint-Germain x Tottenham",
+          "home": "Paris Saint-Germain",
+          "away": "Tottenham",
           "official": "Paris Saint-Germain",
           "picks": [
             {
@@ -19942,7 +20194,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Liverpool x PSV Eindhoven",
+          "home": "Liverpool",
+          "away": "PSV Eindhoven",
           "official": "PSV Eindhoven",
           "picks": [
             {
@@ -20158,7 +20413,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Arsenal x Bayern de Munique",
+          "home": "Arsenal",
+          "away": "Bayern de Munique",
           "official": "Arsenal",
           "picks": [
             {
@@ -20374,7 +20632,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Atlético de Madrid x Internazionale",
+          "home": "Atlético de Madrid",
+          "away": "Internazionale",
           "official": "Atlético de Madrid",
           "picks": [
             {
@@ -20590,7 +20851,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Eintracht Frankfurt x Atalanta",
+          "home": "Eintracht Frankfurt",
+          "away": "Atalanta",
           "official": "Atalanta",
           "picks": [
             {
@@ -20806,7 +21070,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Sporting x Club Brugge",
+          "home": "Sporting",
+          "away": "Club Brugge",
           "official": "Sporting",
           "picks": [
             {
@@ -21022,7 +21289,10 @@
           ]
         },
         {
-          "label": "Machtday 5",
+          "matchday": "Machtday 5",
+          "label": "Olympiacos x Real Madrid",
+          "home": "Olympiacos",
+          "away": "Real Madrid",
           "official": "Real Madrid",
           "picks": [
             {
@@ -21238,7 +21508,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Kairat x Olympiacos",
+          "home": "Kairat",
+          "away": "Olympiacos",
           "official": "Olympiacos",
           "picks": [
             {
@@ -21454,7 +21727,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Bayern de Munique x Sporting",
+          "home": "Bayern de Munique",
+          "away": "Sporting",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -21670,7 +21946,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Internazionale x Liverpool",
+          "home": "Internazionale",
+          "away": "Liverpool",
           "official": "Liverpool",
           "picks": [
             {
@@ -21886,7 +22165,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Barcelona x Eintracht Frankfurt",
+          "home": "Barcelona",
+          "away": "Eintracht Frankfurt",
           "official": "Barcelona",
           "picks": [
             {
@@ -22102,7 +22384,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Atalanta x Chelsea",
+          "home": "Atalanta",
+          "away": "Chelsea",
           "official": "Atalanta",
           "picks": [
             {
@@ -22318,7 +22603,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Tottenham x Slavia Praga",
+          "home": "Tottenham",
+          "away": "Slavia Praga",
           "official": "Tottenham",
           "picks": [
             {
@@ -22534,7 +22822,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "PSV Eindhoven x Atlético de Madrid",
+          "home": "PSV Eindhoven",
+          "away": "Atlético de Madrid",
           "official": "Atlético de Madrid",
           "picks": [
             {
@@ -22750,7 +23041,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Monaco x Galatasaray",
+          "home": "Monaco",
+          "away": "Galatasaray",
           "official": "Monaco",
           "picks": [
             {
@@ -22966,7 +23260,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Union Saint-Gilloise x Olympique de Marselha",
+          "home": "Union Saint-Gilloise",
+          "away": "Olympique de Marselha",
           "official": "Olympique de Marselha",
           "picks": [
             {
@@ -23182,7 +23479,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Villarreal x Copenhagen",
+          "home": "Villarreal",
+          "away": "Copenhagen",
           "official": "Copenhagen",
           "picks": [
             {
@@ -23398,7 +23698,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Qarabag x Ajax",
+          "home": "Qarabag",
+          "away": "Ajax",
           "official": "Ajax",
           "picks": [
             {
@@ -23614,7 +23917,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Borussia Dortmund x Bodö/Glimt",
+          "home": "Borussia Dortmund",
+          "away": "Bodö/Glimt",
           "official": "Empate",
           "picks": [
             {
@@ -23830,7 +24136,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Bayer Leverkusen x Newcastle",
+          "home": "Bayer Leverkusen",
+          "away": "Newcastle",
           "official": "Empate",
           "picks": [
             {
@@ -24046,7 +24355,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Benfica x Napoli",
+          "home": "Benfica",
+          "away": "Napoli",
           "official": "Benfica",
           "picks": [
             {
@@ -24262,7 +24574,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Juventus x Pafos",
+          "home": "Juventus",
+          "away": "Pafos",
           "official": "Juventus",
           "picks": [
             {
@@ -24478,7 +24793,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Club Brugge x Arsenal",
+          "home": "Club Brugge",
+          "away": "Arsenal",
           "official": "Arsenal",
           "picks": [
             {
@@ -24694,7 +25012,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Athletic Bilbao x Paris Saint-Germain",
+          "home": "Athletic Bilbao",
+          "away": "Paris Saint-Germain",
           "official": "Empate",
           "picks": [
             {
@@ -24910,7 +25231,10 @@
           ]
         },
         {
-          "label": "Machtday 6",
+          "matchday": "Machtday 6",
+          "label": "Real Madrid x Manchester City",
+          "home": "Real Madrid",
+          "away": "Manchester City",
           "official": "Manchester City",
           "picks": [
             {
@@ -25126,7 +25450,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Kairat x Club Brugge",
+          "home": "Kairat",
+          "away": "Club Brugge",
           "official": "Club Brugge",
           "picks": [
             {
@@ -25342,7 +25669,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Bodö/Glimt x Manchester City",
+          "home": "Bodö/Glimt",
+          "away": "Manchester City",
           "official": "Bodö/Glimt",
           "picks": [
             {
@@ -25558,7 +25888,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Real Madrid x Monaco",
+          "home": "Real Madrid",
+          "away": "Monaco",
           "official": "Real Madrid",
           "picks": [
             {
@@ -25774,7 +26107,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Internazionale x Arsenal",
+          "home": "Internazionale",
+          "away": "Arsenal",
           "official": "Arsenal",
           "picks": [
             {
@@ -25990,7 +26326,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Villarreal x Ajax",
+          "home": "Villarreal",
+          "away": "Ajax",
           "official": "Ajax",
           "picks": [
             {
@@ -26206,7 +26545,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Tottenham x Borussia Dortmund",
+          "home": "Tottenham",
+          "away": "Borussia Dortmund",
           "official": "Tottenham",
           "picks": [
             {
@@ -26422,7 +26764,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Sporting x Paris Saint-Germain",
+          "home": "Sporting",
+          "away": "Paris Saint-Germain",
           "official": "Sporting",
           "picks": [
             {
@@ -26638,7 +26983,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Olympiacos x Bayer Leverkusen",
+          "home": "Olympiacos",
+          "away": "Bayer Leverkusen",
           "official": "Olympiacos",
           "picks": [
             {
@@ -26854,7 +27202,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Copenhagen x Napoli",
+          "home": "Copenhagen",
+          "away": "Napoli",
           "official": "Empate",
           "picks": [
             {
@@ -27070,7 +27421,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Galatasaray x Atlético de Madrid",
+          "home": "Galatasaray",
+          "away": "Atlético de Madrid",
           "official": "Empate",
           "picks": [
             {
@@ -27286,7 +27640,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Qarabag x Eintracht Frankfurt",
+          "home": "Qarabag",
+          "away": "Eintracht Frankfurt",
           "official": "Qarabag",
           "picks": [
             {
@@ -27502,7 +27859,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Chelsea x Pafos",
+          "home": "Chelsea",
+          "away": "Pafos",
           "official": "Chelsea",
           "picks": [
             {
@@ -27718,7 +28078,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Atalanta x Athletic Bilbao",
+          "home": "Atalanta",
+          "away": "Athletic Bilbao",
           "official": "Athletic Bilbao",
           "picks": [
             {
@@ -27934,7 +28297,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Juventus x Benfica",
+          "home": "Juventus",
+          "away": "Benfica",
           "official": "Juventus",
           "picks": [
             {
@@ -28150,7 +28516,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Slavia Praga x Barcelona",
+          "home": "Slavia Praga",
+          "away": "Barcelona",
           "official": "Barcelona",
           "picks": [
             {
@@ -28366,7 +28735,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Olympique de Marselha x Liverpool",
+          "home": "Olympique de Marselha",
+          "away": "Liverpool",
           "official": "Liverpool",
           "picks": [
             {
@@ -28582,7 +28954,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Newcastle x PSV Eindhoven",
+          "home": "Newcastle",
+          "away": "PSV Eindhoven",
           "official": "Newcastle",
           "picks": [
             {
@@ -28798,7 +29173,10 @@
           ]
         },
         {
-          "label": "Machtday 7",
+          "matchday": "Machtday 7",
+          "label": "Bayern de Munique x Union Saint-Gilloise",
+          "home": "Bayern de Munique",
+          "away": "Union Saint-Gilloise",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -29014,7 +29392,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Pafos x Slavia Praga",
+          "home": "Pafos",
+          "away": "Slavia Praga",
           "official": "Pafos",
           "picks": [
             {
@@ -29230,7 +29611,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Paris Saint-Germain x Newcastle",
+          "home": "Paris Saint-Germain",
+          "away": "Newcastle",
           "official": "Empate",
           "picks": [
             {
@@ -29446,7 +29830,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Manchester City x Galatasaray",
+          "home": "Manchester City",
+          "away": "Galatasaray",
           "official": "Manchester City",
           "picks": [
             {
@@ -29662,7 +30049,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Liverpool x Qarabag",
+          "home": "Liverpool",
+          "away": "Qarabag",
           "official": "Liverpool",
           "picks": [
             {
@@ -29878,7 +30268,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Borussia Dortmund x Internazionale",
+          "home": "Borussia Dortmund",
+          "away": "Internazionale",
           "official": "Internazionale",
           "picks": [
             {
@@ -30094,7 +30487,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Barcelona x Copenhagen",
+          "home": "Barcelona",
+          "away": "Copenhagen",
           "official": "Barcelona",
           "picks": [
             {
@@ -30310,7 +30706,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Arsenal x Kairat",
+          "home": "Arsenal",
+          "away": "Kairat",
           "official": "Arsenal",
           "picks": [
             {
@@ -30526,7 +30925,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Bayer Leverkusen x Villarreal",
+          "home": "Bayer Leverkusen",
+          "away": "Villarreal",
           "official": "Bayer Leverkusen",
           "picks": [
             {
@@ -30742,7 +31144,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Atlético de Madrid x Bodö/Glimt",
+          "home": "Atlético de Madrid",
+          "away": "Bodö/Glimt",
           "official": "Bodö/Glimt",
           "picks": [
             {
@@ -30958,7 +31363,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Benfica x Real Madrid",
+          "home": "Benfica",
+          "away": "Real Madrid",
           "official": "Benfica",
           "picks": [
             {
@@ -31174,7 +31582,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Eintracht Frankfurt x Tottenham",
+          "home": "Eintracht Frankfurt",
+          "away": "Tottenham",
           "official": "Tottenham",
           "picks": [
             {
@@ -31390,7 +31801,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Club Brugge x Olympique de Marselha",
+          "home": "Club Brugge",
+          "away": "Olympique de Marselha",
           "official": "Club Brugge",
           "picks": [
             {
@@ -31606,7 +32020,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "PSV Eindhoven x Bayern de Munique",
+          "home": "PSV Eindhoven",
+          "away": "Bayern de Munique",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -31822,7 +32239,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Monaco x Juventus",
+          "home": "Monaco",
+          "away": "Juventus",
           "official": "Empate",
           "picks": [
             {
@@ -32038,7 +32458,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Union Saint-Gilloise x Atalanta",
+          "home": "Union Saint-Gilloise",
+          "away": "Atalanta",
           "official": "Union Saint-Gilloise",
           "picks": [
             {
@@ -32254,7 +32677,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Athletic Bilbao x Sporting",
+          "home": "Athletic Bilbao",
+          "away": "Sporting",
           "official": "Sporting",
           "picks": [
             {
@@ -32470,7 +32896,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Ajax x Olympiacos",
+          "home": "Ajax",
+          "away": "Olympiacos",
           "official": "Olympiacos",
           "picks": [
             {
@@ -32686,7 +33115,10 @@
           ]
         },
         {
-          "label": "Machtday 8",
+          "matchday": "Machtday 8",
+          "label": "Napoli x Chelsea",
+          "home": "Napoli",
+          "away": "Chelsea",
           "official": "Chelsea",
           "picks": [
             {
@@ -32902,7 +33334,10 @@
           ]
         },
         {
-          "label": "Classificado 1",
+          "matchday": "Classificado 1",
+          "label": "Classificado em 1",
+          "home": "",
+          "away": "",
           "official": "Arsenal",
           "picks": [
             {
@@ -33118,7 +33553,10 @@
           ]
         },
         {
-          "label": "Classificado 2",
+          "matchday": "Classificado 2",
+          "label": "Classificado em 2",
+          "home": "",
+          "away": "",
           "official": "Bayern de Munique",
           "picks": [
             {
@@ -33334,7 +33772,10 @@
           ]
         },
         {
-          "label": "Classificado 3",
+          "matchday": "Classificado 3",
+          "label": "Classificado em 3",
+          "home": "",
+          "away": "",
           "official": "Liverpool",
           "picks": [
             {
@@ -33550,7 +33991,10 @@
           ]
         },
         {
-          "label": "Classificado 4",
+          "matchday": "Classificado 4",
+          "label": "Classificado em 4",
+          "home": "",
+          "away": "",
           "official": "Tottenham",
           "picks": [
             {
@@ -33766,7 +34210,10 @@
           ]
         },
         {
-          "label": "Classificado 5",
+          "matchday": "Classificado 5",
+          "label": "Classificado em 5",
+          "home": "",
+          "away": "",
           "official": "Barcelona",
           "picks": [
             {
@@ -33982,7 +34429,10 @@
           ]
         },
         {
-          "label": "Classificado 6",
+          "matchday": "Classificado 6",
+          "label": "Classificado em 6",
+          "home": "",
+          "away": "",
           "official": "Chelsea",
           "picks": [
             {
@@ -34198,7 +34648,10 @@
           ]
         },
         {
-          "label": "Classificado 7",
+          "matchday": "Classificado 7",
+          "label": "Classificado em 7",
+          "home": "",
+          "away": "",
           "official": "Sporting",
           "picks": [
             {
@@ -34414,7 +34867,10 @@
           ]
         },
         {
-          "label": "Classificado 8",
+          "matchday": "Classificado 8",
+          "label": "Classificado em 8",
+          "home": "",
+          "away": "",
           "official": "Manchester City",
           "picks": [
             {
