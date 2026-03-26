@@ -1093,21 +1093,12 @@ function renderPredictionsGallery() {
     .join("");
 }
 
-let activeConsultTab = 'playoff';
-
-window.setConsultTab = function(tab) {
-  activeConsultTab = tab;
-  renderPredictionConsultation();
-};
-
+let activePredictionsPhase = "LEAGUE";
+let activePredictionsFilter = "Matchday 1";
 
 function renderPredictionConsultation() {
-  const container = document.getElementById("picks-container");
+  const container = document.getElementById("predictions-consultation");
   if (!container) return;
-  
-  if (!backtestData?.phases) {
-    container.innerHTML = `
-      <div class="text-center muted" style="padding: 3rem;">
         Aguardando estruturação das tabelas de palpites oficiais...
       </div>`;
     return;

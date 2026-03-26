@@ -175,6 +175,7 @@ def main():
 
     # LEAGUE PHASE
     if ws_1a:
+        ws_form = wb['Form_PrimeiraFase'] if 'Form_PrimeiraFase' in wb.sheetnames else None
         fixtures_1a = []
         r = 8
         while r < 200:
@@ -183,8 +184,28 @@ def main():
             
             off = normalize(ws_1a.cell(row=r, column=2).value)
             
+            # Extrair título original do confronto a partir da aba Form_PrimeiraFase
+            real_match_title = ""
+            if ws_form:
+                col_index = r - 4
+                real_val = ws_form.cell(row=1, column=col_index).value
+                if real_val:
+                    real_match_title = str(real_val).strip()
+            
+            if not real_match_title:
+                real_match_title = f"{md} - Jogo {r-7}"
+
+            h = ""
+            a = ""
+            if " x " in real_match_title:
+                h = real_match_title.split(" x ")[0]
+                a = real_match_title.split(" x ")[1]
+            
             fixture = {
-                "label": md,
+                "matchday": md,
+                "label": real_match_title,
+                "home": h,
+                "away": a,
                 "official": off,
                 "picks": []
             }
