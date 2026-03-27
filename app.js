@@ -772,6 +772,11 @@ function renderSuperclassicPanel() {
       .predictions-matrix-table td.participant-name { text-align: left; font-weight: bold; background: var(--clr-surface-100); position: sticky; left: 0; z-index: 2; width: 150px;}
       .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; border: 1px solid var(--clr-surface-300); }
       .superclassic-pick-cell { background: rgba(255, 200, 0, 0.1); color: #ffe6a0; font-weight: 600; }
+      .superclassic-exact-hit { background: rgba(59, 201, 114, 0.16); color: #d8f3dc; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(59, 201, 114, 0.28); }
+      .superclassic-exact-mark { display: block; margin-top: 4px; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: #86efac; }
+      .superclassic-official-pill { display: inline-block; background: rgba(59, 201, 114, 0.2); color: #d8f3dc; padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(59, 201, 114, 0.32); }
+      .superclassic-official-pending { display: inline-block; background: rgba(255, 255, 255, 0.08); color: var(--clr-text-muted); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--clr-surface-300); }
+      .superclassic-exact-summary { margin-top: 14px; display: grid; gap: 10px; }
     </style>
   `;
 
@@ -786,6 +791,43 @@ function renderSuperclassicPanel() {
     if (typeof posA === "number") return -1;
     if (typeof posB === "number") return 1;
     return nameA.localeCompare(nameB, "pt-BR");
+  };
+
+  const teamAliases = {
+    "bayern de munique": "bayern munchen",
+    "bayern münchen": "bayern munchen",
+    "bayern munchen": "bayern munchen",
+    "atlético de madrid": "atletico de madrid",
+    "atletico de madrid": "atletico de madrid",
+    inter: "internazionale",
+    internazionale: "internazionale",
+  };
+
+  const canonicalTeamKey = (teamName) => {
+    const normalized = normalizeText(teamName || "");
+    return teamAliases[normalized] || normalized;
+  };
+
+  const buildResultLookupKey = (homeTeam, awayTeam) =>
+    `${canonicalTeamKey(homeTeam)}::${canonicalTeamKey(awayTeam)}`;
+
+  const officialResultByFixture = new Map();
+  const registerOfficialResult = (match) => {
+    const home = match?.scoreFinal?.home;
+    const away = match?.scoreFinal?.away;
+    if (typeof home !== "number" || typeof away !== "number") return;
+    const key = buildResultLookupKey(match.homeTeam, match.awayTeam);
+    officialResultByFixture.set(key, `${home}x${away}`);
+  };
+
+  (knockoutResults || []).forEach(registerOfficialResult);
+  (leaguePhaseResults || []).forEach(registerOfficialResult);
+
+  const getOfficialResultForMatchTitle = (title) => {
+    if (!title || !title.includes(" x ")) return "";
+    const [homeTeam, awayTeam] = title.split(" x ");
+    const key = buildResultLookupKey(homeTeam, awayTeam);
+    return officialResultByFixture.get(key) || "";
   };
 
   const renderSuperclassicMatrix = (block) => {
@@ -809,6 +851,46 @@ function renderSuperclassicPanel() {
     });
 
     const participantNames = Array.from(picksByParticipant.keys()).sort(sortParticipants);
+    const officialByMatch = new Map(
+      matchCols.map((match) => [match.key, getOfficialResultForMatchTitle(match.label)])
+    );
+
+    const exactSummaryMarkup = `
+      <div class="superclassic-exact-summary">
+        ${matchCols
+          .map((match) => {
+            const official = officialByMatch.get(match.key);
+            if (!official) {
+              return `
+                <div class="prediction-highlight-block">
+                  <span class="prediction-highlight-label">${match.label}</span>
+                  <span class="muted">Resultado oficial ainda não disponível.</span>
+                </div>
+              `;
+            }
+            const exactHits = participantNames.filter((participantName) => {
+              const picksByTitle = picksByParticipant.get(participantName) || new Map();
+              return (picksByTitle.get(match.key) || "") === official;
+            });
+
+            return `
+              <div class="prediction-highlight-block">
+                <span class="prediction-highlight-label">${match.label} • Oficial ${official}</span>
+                <div class="prediction-highlight-list">
+                  ${
+                    exactHits.length
+                      ? exactHits
+                          .map((name) => `<span class="result-chip exact">${name}</span>`)
+                          .join("")
+                      : `<span class="muted">Ninguém acertou o placar exato.</span>`
+                  }
+                </div>
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
 
     return `
       <div class="table-wrapper">
@@ -822,7 +904,11 @@ function renderSuperclassicPanel() {
                     <th>
                       <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">Superclássico</div>
                       <div style="margin-bottom:8px;">${match.label}</div>
-                      <div style="display:inline-block; background:var(--clr-surface-400); color:white; padding:2px 8px; border-radius:12px;">Palpite</div>
+                      ${
+                        officialByMatch.get(match.key)
+                          ? `<div class="superclassic-official-pill">Oficial: ${officialByMatch.get(match.key)}</div>`
+                          : `<div class="superclassic-official-pending">Oficial pendente</div>`
+                      }
                     </th>
                   `
                 )
@@ -844,7 +930,19 @@ function renderSuperclassicPanel() {
                     ${matchCols
                       .map((match) => {
                         const pick = picksByTitle.get(match.key) || "-";
-                        return `<td class="${pick === "-" ? "" : "superclassic-pick-cell"}">${pick}</td>`;
+                        const official = officialByMatch.get(match.key);
+                        const isExactHit = pick !== "-" && official && pick === official;
+                        const className = pick === "-"
+                          ? ""
+                          : isExactHit
+                            ? "superclassic-exact-hit"
+                            : "superclassic-pick-cell";
+                        return `
+                          <td class="${className}">
+                            ${pick}
+                            ${isExactHit ? `<span class="superclassic-exact-mark">Placar exato</span>` : ""}
+                          </td>
+                        `;
                       })
                       .join("")}
                   </tr>
@@ -854,6 +952,7 @@ function renderSuperclassicPanel() {
           </tbody>
         </table>
       </div>
+      ${exactSummaryMarkup}
     `;
   };
 
