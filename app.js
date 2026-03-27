@@ -1162,6 +1162,15 @@ function renderHistory() {
     return Boolean(text && text !== "-" && text !== "?");
   };
 
+  const parseGuanabaraWinners = (value) => {
+    const text = String(value || "").trim();
+    if (!text) return [];
+    return text
+      .split(/\s*\/\s*|\s*,\s*|\s+e\s+|\s*&\s*/i)
+      .map((item) => item.trim())
+      .filter((item) => isValidPlacementName(item));
+  };
+
   const podiumMap = new Map();
   const ensurePodiumEntry = (name) => {
     const displayName = String(name || "").trim();
@@ -1174,6 +1183,7 @@ function renderHistory() {
         vice: 0,
         third: 0,
         fourth: 0,
+        guanabara: 0,
       });
     }
     return podiumMap.get(key);
@@ -1191,6 +1201,11 @@ function renderHistory() {
 
     const fourthEntry = ensurePodiumEntry(row.fourth);
     if (fourthEntry) fourthEntry.fourth += 1;
+
+    parseGuanabaraWinners(row.guanabara).forEach((winnerName) => {
+      const guanabaraEntry = ensurePodiumEntry(winnerName);
+      if (guanabaraEntry) guanabaraEntry.guanabara += 1;
+    });
   });
 
   const hallRows = [...podiumMap.values()]
@@ -1203,6 +1218,7 @@ function renderHistory() {
       || b.vice - a.vice
       || b.third - a.third
       || b.fourth - a.fourth
+      || b.guanabara - a.guanabara
       || b.podiums - a.podiums
       || a.name.localeCompare(b.name, "pt-BR")
     );
@@ -1213,7 +1229,7 @@ function renderHistory() {
   }
 
   hallOfFame.innerHTML = `
-    <p class="muted">Ordem priorizada por títulos de campeão (desempate: vice, 3º e 4º lugares).</p>
+    <p class="muted">Ordem priorizada por títulos de campeão (desempate: vice, 3º, 4º e Taça Guanabara).</p>
     <div class="table-wrap">
       <table class="dashboard-table hall-fame-table">
         <thead>
@@ -1224,6 +1240,7 @@ function renderHistory() {
             <th>Vice</th>
             <th>3º</th>
             <th>4º</th>
+            <th>Taça Guanabara</th>
             <th>Pódios</th>
           </tr>
         </thead>
@@ -1242,6 +1259,7 @@ function renderHistory() {
                   <td>${row.vice}</td>
                   <td>${row.third}</td>
                   <td>${row.fourth}</td>
+                  <td>${row.guanabara}</td>
                   <td><strong>${row.podiums}</strong></td>
                 </tr>
               `
