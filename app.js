@@ -1160,14 +1160,7 @@ function renderPredictionConsultation() {
     return;
   }
 
-  const matchCols = srcFixtures; 
-  const participantsSet = new Set();
-  matchCols.forEach(m => {
-    (m.picks || []).forEach(p => participantsSet.add(p.participant));
-  });
-  const participants = Array.from(participantsSet).sort();
-
-  let tableConfig = `
+  const tableStyles = `
     <style>
       .predictions-matrix-table { width: 100%; border-collapse: collapse; text-align: center; }
       .predictions-matrix-table th { background: var(--clr-surface-200); padding: 1rem; border: 1px solid var(--clr-surface-300); font-weight:500; font-size:0.85rem; }
@@ -1176,48 +1169,91 @@ function renderPredictionConsultation() {
       .hit-cell { background: rgba(34,197,94,0.15) !important; color: #4ade80 !important; font-weight: bold; }
       .miss-cell { background: var(--clr-surface-100); color: var(--clr-text-muted); }
       .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; border: 1px solid var(--clr-surface-300); }
+      .predictions-section-title { margin: 1.5rem 0 0.75rem; color: var(--clr-text-100); font-size: 1rem; letter-spacing: 0.03em; }
+      .predictions-section-title:first-of-type { margin-top: 0; }
     </style>
-    <div class="table-wrapper">
-      <table class="predictions-matrix-table">
-        <thead>
-          <tr>
-            <th class="participant-name">Participante</th>
-            ${matchCols.map(m => `
-              <th>
-                <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">${m.matchday && m.matchday.includes("Machtday") ? m.matchday.replace("Machtday", "Rodada") : "Jogo Oficial"}</div>
-                <div style="margin-bottom:8px;">${m.label}</div>
-                <div style="display:inline-block; background:var(--clr-surface-400); color:white; padding:2px 8px; border-radius:12px;">${m.official || "-"}</div>
-              </th>
-            `).join("")}
-          </tr>
-        </thead>
-        <tbody>
-          ${participants.map(part => `
-            <tr>
-              <td class="participant-name">
-                 <div style="display:flex; align-items:center; gap:8px;">
-                   <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${part.charAt(0)}</div>
-                   ${part}
-                 </div>
-              </td>
-              ${matchCols.map(m => {
-                const pickObj = (m.picks || []).find(p => p.participant === part);
-                const pickStr = pickObj ? pickObj.pick : "-";
-                let isHit = false;
-                if (m.official && m.official !== "-") {
-                  if (pickStr.toLowerCase() === m.official.toLowerCase()) isHit = true;
-                }
-                const cellClass = isHit ? "hit-cell" : "miss-cell";
-                return `<td class="${pickStr === "-" ? "" : cellClass}">${pickStr}</td>`;
-              }).join("")}
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
   `;
 
-  container.innerHTML = phaseTabsHTML + secondaryTabsHTML + tableConfig;
+  const renderMatrixTable = (matchCols, sectionTitle = "") => {
+    if (!matchCols.length) {
+      return "";
+    }
+
+    const participantsSet = new Set();
+    matchCols.forEach(m => {
+      (m.picks || []).forEach(p => participantsSet.add(p.participant));
+    });
+    const participants = Array.from(participantsSet).sort();
+
+    return `
+      ${sectionTitle ? `<h3 class="predictions-section-title">${sectionTitle}</h3>` : ""}
+      <div class="table-wrapper">
+        <table class="predictions-matrix-table">
+          <thead>
+            <tr>
+              <th class="participant-name">Participante</th>
+              ${matchCols.map(m => `
+                <th>
+                  <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">${m.matchday && m.matchday.includes("Machtday") ? m.matchday.replace("Machtday", "Rodada") : "Jogo Oficial"}</div>
+                  <div style="margin-bottom:8px;">${m.label}</div>
+                  <div style="display:inline-block; background:var(--clr-surface-400); color:white; padding:2px 8px; border-radius:12px;">${m.official || "-"}</div>
+                </th>
+              `).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${participants.map(part => `
+              <tr>
+                <td class="participant-name">
+                   <div style="display:flex; align-items:center; gap:8px;">
+                     <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${part.charAt(0)}</div>
+                     ${part}
+                   </div>
+                </td>
+                ${matchCols.map(m => {
+                  const pickObj = (m.picks || []).find(p => p.participant === part);
+                  const pickStr = pickObj ? pickObj.pick : "-";
+                  let isHit = false;
+                  if (m.official && m.official !== "-") {
+                    if (pickStr.toLowerCase() === m.official.toLowerCase()) isHit = true;
+                  }
+                  const cellClass = isHit ? "hit-cell" : "miss-cell";
+                  return `<td class="${pickStr === "-" ? "" : cellClass}">${pickStr}</td>`;
+                }).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  };
+
+  const phasesWithTwoLegs = ["PLAYOFF", "ROUND_OF_16"];
+  let tablesMarkup = "";
+
+  if (phasesWithTwoLegs.includes(activePredictionsPhase)) {
+    let idaFixtures = srcFixtures.filter((fixture) => (fixture.leg || "").toUpperCase() === "IDA");
+    let voltaFixtures = srcFixtures.filter((fixture) => (fixture.leg || "").toUpperCase() === "VOLTA");
+
+    // Fallback para bases antigas sem o campo "leg".
+    if (!idaFixtures.length && !voltaFixtures.length && srcFixtures.length > 1) {
+      const midpoint = Math.ceil(srcFixtures.length / 2);
+      idaFixtures = srcFixtures.slice(0, midpoint);
+      voltaFixtures = srcFixtures.slice(midpoint);
+    }
+
+    tablesMarkup += renderMatrixTable(idaFixtures, "Jogos de Ida");
+    tablesMarkup += renderMatrixTable(voltaFixtures, "Jogos de Volta");
+  } else {
+    tablesMarkup = renderMatrixTable(srcFixtures);
+  }
+
+  if (!tablesMarkup.trim()) {
+    container.innerHTML = phaseTabsHTML + secondaryTabsHTML + `<div class="empty-state">Nenhum palpite registrado nesta etapa ainda.</div>`;
+    return;
+  }
+
+  container.innerHTML = phaseTabsHTML + secondaryTabsHTML + tableStyles + tablesMarkup;
 }
 
 window.setPredictPhase = (ph) => {

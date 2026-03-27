@@ -9,8 +9,24 @@ def slugify(s):
     return str(s).strip().lower().replace(" ", "-")
 
 def normalize(s):
-    if not s or s == "None": return ""
-    return str(s).strip()
+    if s is None:
+        return ""
+    text = str(s).strip()
+    if text == "None":
+        return ""
+    return text
+
+def format_numeric_cell(value):
+    text = normalize(value)
+    if text == "":
+        return ""
+    try:
+        number = float(text)
+    except ValueError:
+        return text
+    if number.is_integer():
+        return str(int(number))
+    return str(number).rstrip("0").rstrip(".")
 
 def main():
     print("=== INICIANDO PARSER OFICIAL DO EXCEL ===")
@@ -29,14 +45,20 @@ def main():
     part_meta = {} # name -> {artilheiro, garcom, favorito}
 
     if ws_1a:
-        # Participantes estão na Row 2, a partir da Coluna 3
-        # Mas vamos procurar a string 'PALPITE'
+        # Participantes estão na Row 2, a partir da Coluna 3.
+        # Há uma repetição do bloco de participantes no arquivo oficial, então
+        # paramos no primeiro nome repetido para evitar duplicação de palpites.
         r_palpite = 2
         col_start = 3
-        while normalize(ws_1a.cell(row=r_palpite, column=col_start).value) != "" and col_start < 50:
+        seen_participants = set()
+        while col_start < 60:
             p_name = normalize(ws_1a.cell(row=r_palpite, column=col_start).value)
-            if p_name:
-                participants.append({"name": p_name, "col": col_start})
+            if p_name == "":
+                break
+            if p_name in seen_participants:
+                break
+            participants.append({"name": p_name, "col": col_start})
+            seen_participants.add(p_name)
             col_start += 1
 
         # Metadados
@@ -95,77 +117,74 @@ def main():
 
     matches_list = []
 
+    def extract_knockout_block(ws, header_row, pick_row_start, pick_row_end, official_row, leg_label):
+        fixtures = []
+        for c in range(3, 200, 5):
+            match_lbl = normalize(ws.cell(row=header_row, column=c).value)
+            if not match_lbl or " x " not in match_lbl:
+                continue
+
+            official_h = format_numeric_cell(ws.cell(row=official_row, column=c).value)
+            official_sep = normalize(ws.cell(row=official_row, column=c + 1).value).lower()
+            official_a = format_numeric_cell(ws.cell(row=official_row, column=c + 2).value)
+            official_res = (
+                f"{official_h}x{official_a}"
+                if official_h != "" and official_a != "" and official_sep == "x"
+                else "-"
+            )
+
+            fixture = {
+                "label": match_lbl,
+                "leg": leg_label,
+                "official": official_res,
+                "picks": []
+            }
+
+            for r in range(pick_row_start, pick_row_end + 1):
+                p_name = normalize(ws.cell(row=r, column=2).value)
+                if not p_name or p_name.lower() in ["oficial", "resultado", "resultado oficial", "placar"]:
+                    continue
+
+                ph = format_numeric_cell(ws.cell(row=r, column=c).value)
+                sep = normalize(ws.cell(row=r, column=c + 1).value).lower()
+                pa = format_numeric_cell(ws.cell(row=r, column=c + 2).value)
+                pts = format_numeric_cell(ws.cell(row=r, column=c + 4).value)
+
+                if sep == "x" and ph != "" and pa != "":
+                    fixture["picks"].append({
+                        "participant": p_name,
+                        "pick": f"{ph}x{pa}",
+                        "rank_value": pts
+                    })
+
+            fixtures.append(fixture)
+        return fixtures
+
     def extract_knockout(sheet_name, phase_key):
         if sheet_name not in wb.sheetnames:
             return
         ws = wb[sheet_name]
         fixtures = []
-
-        # Find ALL participant rows mapped to names, since names repeat 4 or 5 times down the sheet!
-        from collections import defaultdict
-        p_row_lists = defaultdict(list)
-        for r in range(3, 120):
-            name = normalize(ws.cell(row=r, column=2).value)
-            if name and name != "None" and name != "" and name.lower() != "oficial" and name.lower() != "resultado":
-                p_row_lists[name].append(r)
-
-        # Matches are spaced columns across Row 2. e.g. Col 3, Col 8, Col 13
-        for c in range(3, 200, 5):
-            match_lbl = normalize(ws.cell(row=2, column=c).value)
-            if not match_lbl or match_lbl == "None" or " x " not in match_lbl:
-                continue
-
-            # Look up official score by searching "oficial" down column 2
-            official_score_h = ""
-            official_score_a = ""
-            for out_r in range(30, 100):
-                if normalize(ws.cell(row=out_r, column=2).value).lower() in ["resultado oficial", "oficial", "placar", "resultado"]:
-                    # Because official score blocks might also repeat, ensure we grab the one with actual numbers
-                    oh = normalize(ws.cell(row=out_r, column=c).value)
-                    oa = normalize(ws.cell(row=out_r, column=c+2).value)
-                    op = normalize(ws.cell(row=out_r, column=c+1).value)
-                    if oh != "" and oa != "" and op == "x":
-                        official_score_h = oh
-                        official_score_a = oa
-                        break
-            
-            official_res = f"{official_score_h}x{official_score_a}" if official_score_h != "" and official_score_a != "" else "-"
-
-            fixture = {
-                "label": match_lbl,
-                "official": official_res,
-                "picks": []
-            }
-
-            for p_name, rows in p_row_lists.items():
-                best_ph, best_pa, best_pts = "", "", ""
-                
-                # Check each row this participant appears in
-                for pr in rows:
-                    ph = normalize(ws.cell(row=pr, column=c).value)
-                    sep = normalize(ws.cell(row=pr, column=c+1).value)
-                    pa = normalize(ws.cell(row=pr, column=c+2).value)
-                    pts = normalize(ws.cell(row=pr, column=c+4).value)
-                    
-                    # We want the section that has 'x' in the middle column
-                    if sep == "x" and ph != "" and pa != "":
-                        best_ph = ph
-                        best_pa = pa
-                        if pts and pts != "None":
-                            try:
-                                best_pts = str(float(pts))
-                            except: pass
-                        break
-                
-                if best_ph != "" and best_pa != "" and best_ph != "None" and best_pa != "None":
-                    fixture["picks"].append({
-                        "participant": p_name,
-                        "pick": f"{best_ph}x{best_pa}",
-                        "rank_value": best_pts
-                    })
-
-            if fixture["picks"]:
-                fixtures.append(fixture)
+        fixtures.extend(
+            extract_knockout_block(
+                ws=ws,
+                header_row=2,
+                pick_row_start=3,
+                pick_row_end=23,
+                official_row=24,
+                leg_label="IDA"
+            )
+        )
+        fixtures.extend(
+            extract_knockout_block(
+                ws=ws,
+                header_row=26,
+                pick_row_start=27,
+                pick_row_end=47,
+                official_row=48,
+                leg_label="VOLTA"
+            )
+        )
 
         if fixtures:
             phases[phase_key] = {"fixtures": fixtures}
