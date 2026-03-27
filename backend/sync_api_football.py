@@ -2,12 +2,56 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import unicodedata
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from .config import Settings
+
+
+SUPERCLASSIC_PHASES = {"LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"}
+SUPERCLASSIC_TEAM_ALIASES = {
+    "bayern de munique": "bayern munchen",
+    "bayern munich": "bayern munchen",
+    "psg": "paris saint germain",
+}
+SUPERCLASSIC_ELIGIBLE_TEAMS = {
+    "real madrid",
+    "barcelona",
+    "bayern munchen",
+    "manchester city",
+    "liverpool",
+    "chelsea",
+    "paris saint germain",
+}
+
+
+def _normalize_text(value: str | None) -> str:
+    if not value:
+        return ""
+    normalized = (
+        unicodedata.normalize("NFD", value)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+        .lower()
+        .replace("-", " ")
+    )
+    return " ".join(normalized.split())
+
+
+def _canonical_team_key(team_name: str | None) -> str:
+    normalized = _normalize_text(team_name)
+    return SUPERCLASSIC_TEAM_ALIASES.get(normalized, normalized)
+
+
+def _is_superclassic_fixture(phase_key: str, home_name: str, away_name: str) -> bool:
+    if phase_key not in SUPERCLASSIC_PHASES:
+        return False
+    home_key = _canonical_team_key(home_name)
+    away_key = _canonical_team_key(away_name)
+    return home_key in SUPERCLASSIC_ELIGIBLE_TEAMS and away_key in SUPERCLASSIC_ELIGIBLE_TEAMS
 
 
 def _request_json(settings: Settings, path: str, params: dict[str, Any]) -> dict[str, Any]:
@@ -78,6 +122,7 @@ def sync_matches(connection: sqlite3.Connection, settings: Settings, season: int
         phase_key, leg_label = _phase_from_round(round_label)
         home = teams.get("home", {})
         away = teams.get("away", {})
+        is_superclassic = int(_is_superclassic_fixture(phase_key, home["name"], away["name"]))
         home_id = _ensure_team(connection, int(home["id"]), home["name"], home.get("logo"))
         away_id = _ensure_team(connection, int(away["id"]), away["name"], away.get("logo"))
         qualified_team_id = None
@@ -100,9 +145,9 @@ def sync_matches(connection: sqlite3.Connection, settings: Settings, season: int
               status_short, status_long, home_team_id, away_team_id,
               score_home_90, score_away_90, score_home_ft, score_away_ft,
               score_home_et, score_away_et, score_home_pen, score_away_pen,
-              qualified_team_id, winner_team_id, went_extra_time, went_penalties,
+              qualified_team_id, winner_team_id, went_extra_time, went_penalties, is_superclassic,
               source_payload_json, source_updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(api_fixture_id) DO UPDATE SET
               season = excluded.season,
               phase_key = excluded.phase_key,
@@ -125,6 +170,7 @@ def sync_matches(connection: sqlite3.Connection, settings: Settings, season: int
               winner_team_id = excluded.winner_team_id,
               went_extra_time = excluded.went_extra_time,
               went_penalties = excluded.went_penalties,
+              is_superclassic = excluded.is_superclassic,
               source_payload_json = excluded.source_payload_json,
               source_updated_at = excluded.source_updated_at
             """,
@@ -151,6 +197,7 @@ def sync_matches(connection: sqlite3.Connection, settings: Settings, season: int
                 qualified_team_id,
                 int(extra.get("home") is not None or extra.get("away") is not None),
                 int(penalties.get("home") is not None or penalties.get("away") is not None),
+                is_superclassic,
                 json.dumps(fixture, ensure_ascii=False),
                 datetime.now(timezone.utc).isoformat(),
             ),

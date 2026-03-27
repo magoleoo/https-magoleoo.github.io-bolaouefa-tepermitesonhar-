@@ -12,6 +12,7 @@ const {
   quarterFinalsFormsConfig,
   rulesHighlights,
   rulesSections,
+  superclassicConfig,
   teamLogos,
   winnersHistory,
 } = window;
@@ -118,6 +119,59 @@ function normalizeText(text) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/\s+/g, " ");
+}
+
+const fallbackSuperclassicConfig = {
+  eligiblePhases: ["LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"],
+  eligibleTeams: [
+    "Real Madrid",
+    "Barcelona",
+    "Bayern de Munique",
+    "Manchester City",
+    "Liverpool",
+    "Chelsea",
+    "Paris Saint-Germain",
+  ],
+};
+
+const superclassicTeamAliases = {
+  "bayern de munique": "bayern munchen",
+  "bayern münchen": "bayern munchen",
+  "bayern munchen": "bayern munchen",
+  "bayern munich": "bayern munchen",
+  "atlético de madrid": "atletico de madrid",
+  "atletico de madrid": "atletico de madrid",
+  "paris saint-germain": "paris saint germain",
+  "paris saint germain": "paris saint germain",
+  psg: "paris saint germain",
+  inter: "internazionale",
+  internazionale: "internazionale",
+};
+
+function canonicalTeamKey(teamName) {
+  const normalized = normalizeText(teamName || "").replace(/-/g, " ");
+  return superclassicTeamAliases[normalized] || normalized;
+}
+
+const superclassicEligiblePhases = new Set(
+  (superclassicConfig?.eligiblePhases?.length
+    ? superclassicConfig.eligiblePhases
+    : fallbackSuperclassicConfig.eligiblePhases
+  ).map((phase) => String(phase).trim().toUpperCase())
+);
+
+const superclassicEligibleTeamKeys = new Set(
+  (superclassicConfig?.eligibleTeams?.length
+    ? superclassicConfig.eligibleTeams
+    : fallbackSuperclassicConfig.eligibleTeams
+  ).map(canonicalTeamKey)
+);
+
+function isEligibleSuperclassicMatch(homeTeam, awayTeam) {
+  return (
+    superclassicEligibleTeamKeys.has(canonicalTeamKey(homeTeam)) &&
+    superclassicEligibleTeamKeys.has(canonicalTeamKey(awayTeam))
+  );
 }
 
 function getParticipantByName(name) {
@@ -435,9 +489,7 @@ function renderMatches() {
   const renderMatchCard = (match, meta = {}) => {
     const matchId = meta.matchId || match.id;
     const superclassic = isManualSuperclassic(matchId);
-    const superclassicEligible = ["LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"].includes(
-      match.phase
-    );
+    const superclassicEligible = superclassicEligiblePhases.has(match.phase);
     const hasScore =
       typeof match?.scoreFinal?.home === "number" && typeof match?.scoreFinal?.away === "number";
     const status = meta.statusLabel || match.status || (hasScore ? "Finalizado" : "Agendado");
@@ -793,21 +845,6 @@ function renderSuperclassicPanel() {
     return nameA.localeCompare(nameB, "pt-BR");
   };
 
-  const teamAliases = {
-    "bayern de munique": "bayern munchen",
-    "bayern münchen": "bayern munchen",
-    "bayern munchen": "bayern munchen",
-    "atlético de madrid": "atletico de madrid",
-    "atletico de madrid": "atletico de madrid",
-    inter: "internazionale",
-    internazionale: "internazionale",
-  };
-
-  const canonicalTeamKey = (teamName) => {
-    const normalized = normalizeText(teamName || "");
-    return teamAliases[normalized] || normalized;
-  };
-
   const buildResultLookupKey = (homeTeam, awayTeam) =>
     `${canonicalTeamKey(homeTeam)}::${canonicalTeamKey(awayTeam)}`;
 
@@ -829,20 +866,6 @@ function renderSuperclassicPanel() {
     const key = buildResultLookupKey(homeTeam, awayTeam);
     return officialResultByFixture.get(key) || "";
   };
-
-  const eligibleSuperclassicTeams = new Set([
-    "real madrid",
-    "barcelona",
-    "bayern munchen",
-    "manchester city",
-    "liverpool",
-    "chelsea",
-    "paris saint-germain",
-  ]);
-
-  const isEligibleSuperclassicMatch = (homeTeam, awayTeam) =>
-    eligibleSuperclassicTeams.has(canonicalTeamKey(homeTeam)) &&
-    eligibleSuperclassicTeams.has(canonicalTeamKey(awayTeam));
 
   const autoDetectedSuperclassics = [];
 
@@ -868,7 +891,7 @@ function renderSuperclassicPanel() {
   });
 
   (knockoutResults || [])
-    .filter((match) => ["PLAYOFF", "ROUND_OF_16", "QUARTER"].includes(match.phase))
+    .filter((match) => superclassicEligiblePhases.has(match.phase))
     .forEach((match) => {
       if (!isEligibleSuperclassicMatch(match.homeTeam, match.awayTeam)) return;
       autoDetectedSuperclassics.push({

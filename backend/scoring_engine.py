@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import unicodedata
 from collections import defaultdict
-from dataclasses import dataclass
 from typing import Any
 
 
@@ -16,9 +16,53 @@ PHASE_RULES = {
     "FINAL": {"result": 7.0, "qualified": 7.0, "exact": 23.8, "favorite": 10.0},
 }
 
+SUPERCLASSIC_PHASES = {"LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"}
+SUPERCLASSIC_TEAM_ALIASES = {
+    "bayern de munique": "bayern munchen",
+    "bayern munich": "bayern munchen",
+    "psg": "paris saint germain",
+}
+SUPERCLASSIC_ELIGIBLE_TEAMS = {
+    "real madrid",
+    "barcelona",
+    "bayern munchen",
+    "manchester city",
+    "liverpool",
+    "chelsea",
+    "paris saint germain",
+}
+
 
 def round2(value: float) -> float:
     return round(value + 1e-9, 2)
+
+
+def normalize_text(value: str | None) -> str:
+    if not value:
+        return ""
+    normalized = (
+        unicodedata.normalize("NFD", value)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+        .lower()
+        .replace("-", " ")
+    )
+    return " ".join(normalized.split())
+
+
+def canonical_team_key(team_name: str | None) -> str:
+    normalized = normalize_text(team_name)
+    return SUPERCLASSIC_TEAM_ALIASES.get(normalized, normalized)
+
+
+def is_superclassic_match(match: sqlite3.Row) -> bool:
+    if match["phase_key"] not in SUPERCLASSIC_PHASES:
+        return False
+    if bool(match["is_superclassic"]):
+        return True
+    home = canonical_team_key(match["home_team_name"])
+    away = canonical_team_key(match["away_team_name"])
+    return home in SUPERCLASSIC_ELIGIBLE_TEAMS and away in SUPERCLASSIC_ELIGIBLE_TEAMS
 
 
 def match_result(home: int | None, away: int | None) -> str | None:
@@ -33,6 +77,50 @@ def match_result(home: int | None, away: int | None) -> str | None:
 
 def list_contains(items: list[str], value: str | None) -> bool:
     return value is not None and value in items
+
+
+def evaluate_prediction_hit(match: sqlite3.Row, prediction: sqlite3.Row) -> str | None:
+    official_result_90 = match_result(match["score_home_90"], match["score_away_90"])
+    predicted_result = match_result(prediction["predicted_home"], prediction["predicted_away"])
+    if official_result_90 is None or predicted_result is None:
+        return None
+
+    is_exact_90 = (
+        prediction["predicted_home"] == match["score_home_90"]
+        and prediction["predicted_away"] == match["score_away_90"]
+    )
+    if is_exact_90:
+        return "exact_90"
+
+    # Se houver prorrogação com placar disponível, vale meio acerto de placar exato.
+    if (
+        match["went_extra_time"]
+        and match["score_home_et"] is not None
+        and match["score_away_et"] is not None
+        and prediction["predicted_home"] == match["score_home_et"]
+        and prediction["predicted_away"] == match["score_away_et"]
+    ):
+        return "exact_et"
+
+    if predicted_result == official_result_90:
+        return "result"
+    return None
+
+
+def is_correct_league_order(official: list[str], picked_team: str, position_index: int | None) -> bool:
+    if not official or picked_team is None or position_index is None:
+        return False
+
+    idx = int(position_index)
+    # Aceita origem 0-based ou 1-based por segurança com fontes mistas.
+    candidate_indexes = [idx]
+    if idx > 0:
+        candidate_indexes.append(idx - 1)
+
+    for candidate in candidate_indexes:
+        if 0 <= candidate < len(official) and official[candidate] == picked_team:
+            return True
+    return False
 
 
 def calculate_leaderboard(connection: sqlite3.Connection, season: int) -> list[dict[str, Any]]:
@@ -94,12 +182,15 @@ def calculate_leaderboard(connection: sqlite3.Connection, season: int) -> list[d
         "ROUND_OF_16": json.loads(season_state.get("round_of_16_json") or "[]"),
         "QUARTER": json.loads(season_state.get("quarter_finals_json") or "[]"),
         "SEMI": json.loads(season_state.get("semi_finals_json") or "[]"),
+        "FINAL": [],
     }
     champion_team_id = season_state.get("champion_team_id")
     champion_name = None
     if champion_team_id:
         row = connection.execute("SELECT name FROM teams WHERE id = ?", (champion_team_id,)).fetchone()
         champion_name = row["name"] if row else None
+    if champion_name:
+        official_lists["FINAL"] = [champion_name]
     top_scorer_name = season_state.get("top_scorer_name")
     top_assist_name = season_state.get("top_assist_name")
 
@@ -109,30 +200,32 @@ def calculate_leaderboard(connection: sqlite3.Connection, season: int) -> list[d
         predictions_by_match[row["match_id"]].append(row)
         predictions_by_participant[row["participant_id"]][row["match_id"]] = row
 
+    superclassic_match_ids = {
+        match["id"]
+        for match in matches
+        if is_superclassic_match(match)
+    }
+
     solo_hit_lookup: dict[tuple[int, int], str] = {}
     for match in matches:
         successful: list[tuple[int, str]] = []
-        official_result = match_result(match["score_home_90"], match["score_away_90"])
         for prediction in predictions_by_match.get(match["id"], []):
-            predicted_result = match_result(prediction["predicted_home"], prediction["predicted_away"])
-            if predicted_result is None or official_result is None:
-                continue
-            if (
-                prediction["predicted_home"] == match["score_home_90"]
-                and prediction["predicted_away"] == match["score_away_90"]
-            ):
-                successful.append((prediction["participant_id"], "exact"))
-            elif predicted_result == official_result:
-                successful.append((prediction["participant_id"], "result"))
+            hit_type = evaluate_prediction_hit(match, prediction)
+            if hit_type is not None:
+                successful.append((prediction["participant_id"], hit_type))
         if len(successful) == 1:
             participant_id, hit_type = successful[0]
             solo_hit_lookup[(participant_id, match["id"])] = hit_type
 
-    picks_by_participant: dict[int, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
+    picks_by_participant: dict[int, dict[str, list[dict[str, Any]]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
     for row in phase_picks:
         value = row["team_name"] or row["raw_value"]
         if value:
-            picks_by_participant[row["participant_id"]][row["phase_key"]].append(value)
+            picks_by_participant[row["participant_id"]][row["phase_key"]].append(
+                {"value": value, "position_index": row["position_index"]}
+            )
 
     special_by_participant: dict[int, dict[str, str]] = defaultdict(dict)
     for row in special_picks:
@@ -163,39 +256,44 @@ def calculate_leaderboard(connection: sqlite3.Connection, season: int) -> list[d
             matches_predicted += 1
             phase_key = match["phase_key"]
             rules = PHASE_RULES.get(phase_key, {})
-            official_result = match_result(match["score_home_90"], match["score_away_90"])
-            predicted_result = match_result(prediction["predicted_home"], prediction["predicted_away"])
-            if official_result is None or predicted_result is None:
+            hit_type = evaluate_prediction_hit(match, prediction)
+            if hit_type is None:
                 continue
 
-            is_exact = (
-                prediction["predicted_home"] == match["score_home_90"]
-                and prediction["predicted_away"] == match["score_away_90"]
-            )
-            if is_exact:
+            if hit_type in {"exact_90", "exact_et"}:
                 total_hits += 1
                 exact_points = rules.get("exact", 0.0)
-                if match["is_superclassic"] and phase_key in {"LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"}:
+                if hit_type == "exact_et":
+                    exact_points *= 0.5
+                if match["id"] in superclassic_match_ids:
+                    superclassic_bonus = exact_points
                     exact_points *= 2
-                    totals["superclassic"] += exact_points - rules.get("exact", 0.0)
+                    totals["superclassic"] += superclassic_bonus
                 if (participant["id"], match["id"]) in solo_hit_lookup:
                     exact_points *= 2
                     totals["hope_solo_hits"] += 1
                 totals[phase_key] += exact_points
-            elif predicted_result == official_result:
+            elif hit_type == "result":
                 total_hits += 1
                 result_points = rules.get("result", 0.0)
                 if (participant["id"], match["id"]) in solo_hit_lookup:
+                    result_points *= 2
                     totals["hope_solo_hits"] += 1
                 totals[phase_key] += result_points
 
         for phase_key, official in official_lists.items():
             rules = PHASE_RULES.get(phase_key, {})
-            for picked_team in picks_by_participant.get(participant["id"], {}).get(phase_key, []):
+            for picked in picks_by_participant.get(participant["id"], {}).get(phase_key, []):
                 matches_predicted += 1
+                picked_team = picked.get("value")
                 if list_contains(official, picked_team):
                     total_hits += 1
                     totals[phase_key] += rules.get("qualified", 0.0)
+                    if (
+                        phase_key == "LEAGUE"
+                        and is_correct_league_order(official, picked_team, picked.get("position_index"))
+                    ):
+                        totals[phase_key] += rules.get("order", 0.0)
 
         favorite_team = special_by_participant.get(participant["id"], {}).get("favorite_team")
         if favorite_team:

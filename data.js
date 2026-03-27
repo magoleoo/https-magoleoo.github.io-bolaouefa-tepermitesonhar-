@@ -7,6 +7,19 @@ window.phaseRules = {
   FINAL: { label: "Final" },
 };
 
+window.superclassicConfig = {
+  eligiblePhases: ["LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"],
+  eligibleTeams: [
+    "Real Madrid",
+    "Barcelona",
+    "Bayern de Munique",
+    "Manchester City",
+    "Liverpool",
+    "Chelsea",
+    "Paris Saint-Germain",
+  ],
+};
+
 window.participants = [
   ["leo-picca", "Leo Picca", "UCL-101"],
   ["leo-raposo", "Leo Raposo", "UCL-102"],
@@ -631,7 +644,7 @@ window.rulesHighlights = [
   "A primeira fase da Champions no novo formato teve 144 partidas na fase de liga.",
   "Os resultados de playoff e oitavas vieram do site oficial da UEFA, atualizado em 18 de março de 2026.",
   "A soma total agora destaca separadamente 1ª fase, playoff 1ª fase e oitavas.",
-  "Superclássicos continuam aparecendo em coluna própria e só valem até as quartas de final.",
+  "Superclássicos seguem em coluna própria e são reconhecidos automaticamente até as quartas, com base na lista oficial de times elegíveis.",
   "A próxima etapa natural é ligar quartas, semi e final assim que os resultados forem acontecendo.",
 ];
 
@@ -683,11 +696,24 @@ window.rulesSections = [
   {
     title: "Regras especiais",
     items: [
-      "Superclássicos: o dobro da pontuação do placar exato em confrontos entre campeões da Champions.",
+      "Superclássicos: o dobro da pontuação do placar exato em confrontos entre times elegíveis ao superclássico.",
       "A regra de superclássico vai somente até as quartas de final. Nas semifinais e na final ela não se aplica.",
       "Hope Solo: quando apenas um participante é o único a acertar o jogo, seja no placar exato ou na tendência, a pontuação desse acerto é dobrada.",
       "Prorrogação: acertando o placar nos 90 minutos, vale a regra normal. Acertando apenas o placar da prorrogação, vale metade da pontuação normal de placar.",
       "Final empatada: se o apostador acertar o placar da final mas errar o campeão, recebe só os 23,80 pontos do placar, sem os pontos de classificação.",
+    ],
+  },
+  {
+    title: "Times elegíveis a superclássico",
+    items: [
+      "Real Madrid",
+      "Barcelona",
+      "Bayern de Munique",
+      "Manchester City",
+      "Liverpool",
+      "Chelsea",
+      "Paris Saint-Germain",
+      "Qualquer confronto entre esses times entra automaticamente como superclássico na base de cálculo (somente em 1ª fase, playoff, oitavas e quartas).",
     ],
   },
 ];
