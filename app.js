@@ -1157,24 +1157,100 @@ function renderHistory() {
     )
     .join("");
 
-  const championCounts = winnersHistory.reduce((acc, row) => {
-    if (!row.first) return acc;
-    acc[row.first] = (acc[row.first] || 0) + 1;
-    return acc;
-  }, {});
+  const isValidPlacementName = (value) => {
+    const text = String(value || "").trim();
+    return Boolean(text && text !== "-" && text !== "?");
+  };
 
-  hallOfFame.innerHTML = Object.entries(championCounts)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"))
-    .slice(0, 8)
-    .map(
-      ([name, titles]) => `
-        <div class="award">
-          <strong>${name}</strong>
-          <p class="muted">${titles} título${titles > 1 ? "s" : ""} de campeão</p>
-        </div>
-      `
-    )
-    .join("");
+  const podiumMap = new Map();
+  const ensurePodiumEntry = (name) => {
+    const displayName = String(name || "").trim();
+    if (!isValidPlacementName(displayName)) return null;
+    const key = normalizeText(displayName);
+    if (!podiumMap.has(key)) {
+      podiumMap.set(key, {
+        name: displayName,
+        champion: 0,
+        vice: 0,
+        third: 0,
+        fourth: 0,
+      });
+    }
+    return podiumMap.get(key);
+  };
+
+  winnersHistory.forEach((row) => {
+    const championEntry = ensurePodiumEntry(row.first);
+    if (championEntry) championEntry.champion += 1;
+
+    const viceEntry = ensurePodiumEntry(row.second);
+    if (viceEntry) viceEntry.vice += 1;
+
+    const thirdEntry = ensurePodiumEntry(row.third);
+    if (thirdEntry) thirdEntry.third += 1;
+
+    const fourthEntry = ensurePodiumEntry(row.fourth);
+    if (fourthEntry) fourthEntry.fourth += 1;
+  });
+
+  const hallRows = [...podiumMap.values()]
+    .map((row) => ({
+      ...row,
+      podiums: row.champion + row.vice + row.third + row.fourth,
+    }))
+    .sort((a, b) =>
+      b.champion - a.champion
+      || b.vice - a.vice
+      || b.third - a.third
+      || b.fourth - a.fourth
+      || b.podiums - a.podiums
+      || a.name.localeCompare(b.name, "pt-BR")
+    );
+
+  if (!hallRows.length) {
+    hallOfFame.innerHTML = "<p class='muted'>Sem dados de pódio para montar o Hall da Fama.</p>";
+    return;
+  }
+
+  hallOfFame.innerHTML = `
+    <p class="muted">Ordem priorizada por títulos de campeão (desempate: vice, 3º e 4º lugares).</p>
+    <div class="table-wrap">
+      <table class="dashboard-table hall-fame-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Palpiteiro</th>
+            <th>Campeão</th>
+            <th>Vice</th>
+            <th>3º</th>
+            <th>4º</th>
+            <th>Pódios</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${hallRows
+            .map(
+              (row, index) => `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td><strong>${row.name}</strong></td>
+                  <td>
+                    <span class="hall-champion-pill">
+                      🏆 ${row.champion}
+                    </span>
+                  </td>
+                  <td>${row.vice}</td>
+                  <td>${row.third}</td>
+                  <td>${row.fourth}</td>
+                  <td><strong>${row.podiums}</strong></td>
+                </tr>
+              `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderRulesPanel() {

@@ -966,6 +966,22 @@ option {
   border-bottom: 0;
 }
 
+.hall-fame-table td {
+  white-space: nowrap;
+}
+
+.hall-champion-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 200, 0, 0.16);
+  border: 1px solid rgba(255, 200, 0, 0.34);
+  color: #ffe6a0;
+  font-weight: 700;
+}
+
 .superclassic-chip {
   display: inline-flex;
   align-items: center;
