@@ -25,13 +25,15 @@ const storageKeys = {
 const loginModal = document.querySelector("#login-modal");
 const loginForm = document.querySelector("#login-form");
 const loginUser = document.querySelector("#login-user");
-const loginUserList = document.querySelector("#login-user-list");
+const loginUserList =
+  document.querySelector("#login-user-list") || document.querySelector("#participant-list");
 const skipLoginButton = document.querySelector("#skip-login-button");
 const loginFeedback = document.querySelector("#login-feedback");
 const logoutButton = document.querySelector("#logout-button");
 const overviewCards = document.querySelector("#overview-cards");
 const rankingTable = document.querySelector("#ranking-table");
-const matchesGrid = document.querySelector("#matches-grid");
+const matchesGrid =
+  document.querySelector("#matches-grid") || document.querySelector("#matches-list");
 const predictionsForm = document.querySelector("#predictions-form");
 const userSummary = document.querySelector("#user-summary");
 const awards = document.querySelector("#awards");
@@ -279,6 +281,9 @@ function teamBadgeMarkup(team, size = "sm") {
 }
 
 function populateLoginSelect() {
+  if (!loginUserList) {
+    return;
+  }
   loginUserList.innerHTML = participants
     .map((participant) => `<option value="${participant.name}"></option>`)
     .join("");
@@ -1213,9 +1218,10 @@ function toggleLoginState() {
 }
 
 function renderApp() {
+  loadImmediateData();
   console.log("Entrando no renderApp... Resolvendo ranking.");
   const leaderboard = getRankingRows();
-  console.log("Leaderboard resolvido:", leaderboard.length, "linhas.");
+  console.log("Leaderboard resolvido:", leaderboard.length, "linhas. window.backtestData size:", window.backtestData?.ranking?.length);
   renderOverview(leaderboard);
   console.log("Overview resolvido.");
   renderUserSummary(leaderboard);
@@ -1316,11 +1322,13 @@ skipLoginButton.addEventListener("click", () => {
   renderApp();
 });
 
-matchesGrid.addEventListener("click", (event) => {
-  const toggleButton = event.target.closest("[data-superclassic-id]");
-  if (!toggleButton) return;
-  toggleManualSuperclassic(toggleButton.dataset.superclassicId);
-});
+if (matchesGrid) {
+  matchesGrid.addEventListener("click", (event) => {
+    const toggleButton = event.target.closest("[data-superclassic-id]");
+    if (!toggleButton) return;
+    toggleManualSuperclassic(toggleButton.dataset.superclassicId);
+  });
+}
 
 tabRanking.addEventListener("click", () => setActiveTab("ranking"));
 tabResults.addEventListener("click", () => setActiveTab("results"));
