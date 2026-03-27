@@ -63,8 +63,32 @@ window.competitionSnapshot = {
 
 window.quarterFinalsFormsConfig = {
   csvUrl: "",
+  submitUrl: "",
+  fieldMap: {
+    participant: "",
+    Q1_ida_home: "",
+    Q1_ida_away: "",
+    Q1_volta_home: "",
+    Q1_volta_away: "",
+    Q1_classificado: "",
+    Q2_ida_home: "",
+    Q2_ida_away: "",
+    Q2_volta_home: "",
+    Q2_volta_away: "",
+    Q2_classificado: "",
+    Q3_ida_home: "",
+    Q3_ida_away: "",
+    Q3_volta_home: "",
+    Q3_volta_away: "",
+    Q3_classificado: "",
+    Q4_ida_home: "",
+    Q4_ida_away: "",
+    Q4_volta_home: "",
+    Q4_volta_away: "",
+    Q4_classificado: "",
+  },
   description:
-    "Cole aqui a URL CSV publicada da planilha de respostas do Google Forms quando ela estiver pronta.",
+    "Cole a URL CSV publicada do Forms para leitura do ranking e, opcionalmente, configure submitUrl + fieldMap para envio automático.",
   expectedColumns: [
     "Timestamp",
     "Participante",

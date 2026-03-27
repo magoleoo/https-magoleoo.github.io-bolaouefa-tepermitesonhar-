@@ -155,13 +155,205 @@ function isEligibleSuperclassicMatch(homeTeam, awayTeam) {
   );
 }
 
+function findKnockoutMatchByTeams(phase, homeTeam, awayTeam) {
+  return (knockoutResults || []).find(
+    (match) =>
+      match.phase === phase &&
+      compareNormalizedNames(match.homeTeam, homeTeam) &&
+      compareNormalizedNames(match.awayTeam, awayTeam)
+  );
+}
+
+function parseFormsTimestamp(row) {
+  if (!row || typeof row !== "object") return Number.NaN;
+  const candidates = [
+    row.Timestamp,
+    row.timestamp,
+    row["Carimbo de data/hora"],
+    row["Carimbo de data/hora (GMT-03:00)"],
+    row["Data/hora"],
+    row["Data e hora"],
+    row["Submitted at"],
+  ];
+  const raw = String(candidates.find((value) => String(value || "").trim()) || "").trim();
+  if (!raw) return Number.NaN;
+  const parsed = Date.parse(raw);
+  return Number.isFinite(parsed) ? parsed : Number.NaN;
+}
+
+function extractQuarterFormsRows(rawRows) {
+  if (!Array.isArray(rawRows) || !rawRows.length) return [];
+
+  const participantIndex = new Map(
+    participants.map((participant) => [normalizeText(participant.name), participant.name])
+  );
+  const canonicalParticipantName = (name) =>
+    participantIndex.get(normalizeText(name)) || String(name || "").trim();
+
+  const latestByParticipant = new Map();
+  rawRows.forEach((row, sourceIndex) => {
+    const participant = canonicalParticipantName(resolveParticipantNameFromFormRow(row));
+    if (!participant) return;
+
+    const key = normalizeText(participant);
+    const candidate = {
+      participant,
+      row,
+      sourceIndex,
+      timestamp: parseFormsTimestamp(row),
+    };
+
+    const current = latestByParticipant.get(key);
+    if (!current) {
+      latestByParticipant.set(key, candidate);
+      return;
+    }
+
+    const currentTime = Number.isFinite(current.timestamp) ? current.timestamp : Number.NEGATIVE_INFINITY;
+    const candidateTime = Number.isFinite(candidate.timestamp) ? candidate.timestamp : Number.NEGATIVE_INFINITY;
+    if (candidateTime > currentTime || (candidateTime === currentTime && sourceIndex > current.sourceIndex)) {
+      latestByParticipant.set(key, candidate);
+    }
+  });
+
+  return [...latestByParticipant.values()].sort((a, b) =>
+    a.participant.localeCompare(b.participant, "pt-BR")
+  );
+}
+
+function buildQuarterScoringContext() {
+  const empty = {
+    byParticipant: new Map(),
+    processedAt: null,
+  };
+  if (!Array.isArray(quarterFinalsFormsData) || !quarterFinalsFormsData.length) return empty;
+  const rows = extractQuarterFormsRows(quarterFinalsFormsData);
+
+  if (!rows.length) return empty;
+
+  const byParticipant = new Map(
+    rows.map((entry) => [
+      normalizeText(entry.participant),
+      { quarter: 0, superclassic: 0, hopeSolo: 0 },
+    ])
+  );
+
+  const quarterLegs = qrMatches.flatMap((match) => [
+    {
+      id: `${match.id}_IDA`,
+      sourceId: match.id,
+      fieldHome: `${match.id}_ida_home`,
+      fieldAway: `${match.id}_ida_away`,
+      homeTeam: match.home1,
+      awayTeam: match.away1,
+    },
+    {
+      id: `${match.id}_VOLTA`,
+      sourceId: match.id,
+      fieldHome: `${match.id}_volta_home`,
+      fieldAway: `${match.id}_volta_away`,
+      homeTeam: match.home2,
+      awayTeam: match.away2,
+    },
+  ]);
+
+  quarterLegs.forEach((leg) => {
+    const officialMatch = findKnockoutMatchByTeams("QUARTER", leg.homeTeam, leg.awayTeam);
+    const officialHome = parseIntegerScore(officialMatch?.scoreFinal?.home);
+    const officialAway = parseIntegerScore(officialMatch?.scoreFinal?.away);
+    if (!Number.isFinite(officialHome) || !Number.isFinite(officialAway)) return;
+
+    const officialResult = matchResultFromScores(officialHome, officialAway);
+    const isSuperclassic = isEligibleSuperclassicMatch(leg.homeTeam, leg.awayTeam);
+    const legHits = [];
+
+    rows.forEach((entry) => {
+      const key = normalizeText(entry.participant);
+      const participantTotals = byParticipant.get(key);
+      if (!participantTotals) return;
+
+      const predictedHome = parseIntegerScore(entry.row[leg.fieldHome]);
+      const predictedAway = parseIntegerScore(entry.row[leg.fieldAway]);
+      if (!Number.isFinite(predictedHome) || !Number.isFinite(predictedAway)) return;
+
+      const predictedResult = matchResultFromScores(predictedHome, predictedAway);
+      if (!predictedResult || !officialResult) return;
+
+      if (predictedHome === officialHome && predictedAway === officialAway) {
+        let exactPoints = quarterScoringRules.exact;
+        if (isSuperclassic) {
+          participantTotals.superclassic += quarterScoringRules.exact;
+          exactPoints *= 2;
+        }
+        participantTotals.quarter += exactPoints;
+        legHits.push({
+          participantKey: key,
+          pointsAwarded: exactPoints,
+        });
+        return;
+      }
+
+      if (predictedResult === officialResult) {
+        participantTotals.quarter += quarterScoringRules.result;
+        legHits.push({
+          participantKey: key,
+          pointsAwarded: quarterScoringRules.result,
+        });
+      }
+    });
+
+    if (legHits.length === 1) {
+      const solo = legHits[0];
+      const participantTotals = byParticipant.get(solo.participantKey);
+      if (!participantTotals) return;
+      participantTotals.quarter += solo.pointsAwarded;
+      participantTotals.hopeSolo += 1;
+    }
+  });
+
+  qrMatches.forEach((match) => {
+    const legMatches = [
+      findKnockoutMatchByTeams("QUARTER", match.home1, match.away1),
+      findKnockoutMatchByTeams("QUARTER", match.home2, match.away2),
+    ].filter(Boolean);
+    const qualified = legMatches.find((item) => item?.qualified)?.qualified || "";
+    if (!qualified) return;
+
+    rows.forEach((entry) => {
+      const participantTotals = byParticipant.get(normalizeText(entry.participant));
+      if (!participantTotals) return;
+      const predictedQualified = String(entry.row[`${match.id}_classificado`] || "").trim();
+      if (!predictedQualified) return;
+      if (compareNormalizedNames(predictedQualified, qualified)) {
+        participantTotals.quarter += quarterScoringRules.qualified;
+      }
+    });
+  });
+
+  return {
+    byParticipant,
+    processedAt: new Date().toISOString(),
+  };
+}
+
 const superclassicPhaseOrder = ["LEAGUE", "PLAYOFF", "ROUND_OF_16", "QUARTER"];
+const quarterScoringRules = {
+  result: 1.44,
+  exact: 8.64,
+  qualified: 4.32,
+};
 
 function normalizeScoreToken(value) {
   const text = String(value || "").trim();
   const match = text.match(/^(\d+)\s*[xX-]\s*(\d+)$/);
   if (!match) return "";
   return `${match[1]}x${match[2]}`;
+}
+
+function parseIntegerScore(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function splitFixtureLabel(label) {
@@ -172,6 +364,31 @@ function splitFixtureLabel(label) {
     homeTeam: homeTeam.trim(),
     awayTeam: awayTeam.trim(),
   };
+}
+
+function compareNormalizedNames(a, b) {
+  return normalizeText(String(a || "")) === normalizeText(String(b || ""));
+}
+
+function resolveParticipantNameFromFormRow(row) {
+  if (!row || typeof row !== "object") return "";
+  const candidates = [
+    row.Participante,
+    row.participante,
+    row.Nome,
+    row.nome,
+    row["Nome completo"],
+    row["Nome Completo"],
+    row["Seu nome"],
+  ];
+  return String(candidates.find((value) => String(value || "").trim()) || "").trim();
+}
+
+function matchResultFromScores(homeScore, awayScore) {
+  if (!Number.isFinite(homeScore) || !Number.isFinite(awayScore)) return null;
+  if (homeScore > awayScore) return "HOME";
+  if (awayScore > homeScore) return "AWAY";
+  return "DRAW";
 }
 
 function normalizeSuperclassicPicks(rawPicks) {
@@ -309,6 +526,7 @@ function getActiveParticipantLabel() {
 
 function getRankingRows() {
   if (!backtestData || !backtestData.ranking) return [];
+  const quarterContext = buildQuarterScoringContext();
   const mapped = backtestData.ranking.map((row) => {
     let nameToMatch = row.name;
     const participant = participants.find(
@@ -319,14 +537,20 @@ function getRankingRows() {
       name: nameToMatch.charAt(0).toUpperCase() + nameToMatch.slice(1),
       accessCode: "",
     };
+    const quarterAdd = quarterContext.byParticipant.get(normalizeText(participant.name)) || {
+      quarter: 0,
+      superclassic: 0,
+      hopeSolo: 0,
+    };
     return { 
       participant: participant,
-      total: row.total_points,
+      total: row.total_points + quarterAdd.quarter,
       firstPhase: row.first_phase_points,
       playoff: row.playoff_points,
       roundOf16: row.round_of_16_points,
-      superclassic: row.superclassic_points,
-      hopeSolo: row.hope_solo_hits,
+      quarter: quarterAdd.quarter,
+      superclassic: row.superclassic_points + quarterAdd.superclassic,
+      hopeSolo: row.hope_solo_hits + quarterAdd.hopeSolo,
       favoriteTeam: row.favorite_team || "-",
       scorerPick: row.scorer_pick || "-",
       assistPick: row.assist_pick || "-"
@@ -464,7 +688,7 @@ function renderUserSummary(leaderboard) {
     <h2>${participant.name}</h2>
     <p class="muted">Posição atual: ${row?.position || "-"}º</p>
     <p class="muted">Total oficial: ${row ? formatPoints(row.total) : "-"} pontos</p>
-    <p class="muted">1ª fase: ${row ? formatPoints(row.firstPhase) : "-"} • Playoff: ${row ? formatPoints(row.playoff) : "-"} • Oitavas: ${row ? formatPoints(row.roundOf16) : "-"}</p>
+    <p class="muted">1ª fase: ${row ? formatPoints(row.firstPhase) : "-"} • Playoff: ${row ? formatPoints(row.playoff) : "-"} • Oitavas: ${row ? formatPoints(row.roundOf16) : "-"} • Quartas: ${row ? formatPoints(row.quarter || 0) : "-"}</p>
   `;
 }
 
@@ -1271,6 +1495,41 @@ function buildQfWhatsAppMessage(formData) {
   return message.trim();
 }
 
+async function submitQuarterPicksToForms(formData) {
+  if (!hasQuarterFormsSubmitConfigured()) {
+    return { ok: false, reason: "not-configured" };
+  }
+
+  const submitUrl = String(quarterFinalsFormsConfig.submitUrl || "").trim();
+  const fieldMap = getQuarterFormsFieldMap();
+  const payload = new URLSearchParams();
+  const appendField = (fieldKey, value) => {
+    const entryKey = String(fieldMap[fieldKey] || "").trim();
+    if (!entryKey) return;
+    payload.append(entryKey, String(value ?? "").trim());
+  };
+
+  appendField("participant", getActiveParticipantLabel());
+  qrMatches.forEach((match) => {
+    appendField(`${match.id}_ida_home`, formData.get(`${match.id}_ida_home`));
+    appendField(`${match.id}_ida_away`, formData.get(`${match.id}_ida_away`));
+    appendField(`${match.id}_volta_home`, formData.get(`${match.id}_volta_home`));
+    appendField(`${match.id}_volta_away`, formData.get(`${match.id}_volta_away`));
+    appendField(`${match.id}_classificado`, formData.get(`${match.id}_classificado`));
+  });
+
+  await fetch(submitUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    body: payload.toString(),
+  });
+
+  return { ok: true };
+}
+
 function loadLeagueSuperclassicDrafts() {
   try {
     const raw = localStorage.getItem(storageKeys.leagueSuperclassicDrafts);
@@ -1386,12 +1645,46 @@ function parseCsv(text) {
   });
 }
 
+function getQuarterFormsFieldMap() {
+  const map = quarterFinalsFormsConfig?.fieldMap;
+  return map && typeof map === "object" ? map : {};
+}
+
+function hasQuarterFormsCsvConfigured() {
+  return Boolean(String(quarterFinalsFormsConfig?.csvUrl || "").trim());
+}
+
+function hasQuarterFormsSubmitConfigured() {
+  const submitUrl = String(quarterFinalsFormsConfig?.submitUrl || "").trim();
+  if (!submitUrl) return false;
+
+  const map = getQuarterFormsFieldMap();
+  const requiredKeys = ["participant", ...qrMatches.flatMap((match) => [
+    `${match.id}_ida_home`,
+    `${match.id}_ida_away`,
+    `${match.id}_volta_home`,
+    `${match.id}_volta_away`,
+    `${match.id}_classificado`,
+  ])];
+
+  return requiredKeys.every((key) => String(map[key] || "").trim());
+}
+
 function renderQuarterFinalsFormsPanel() {
-  if (!quarterFinalsFormsConfig.csvUrl) {
+  const csvConfigured = hasQuarterFormsCsvConfigured();
+  const submitConfigured = hasQuarterFormsSubmitConfigured();
+  const rows = extractQuarterFormsRows(quarterFinalsFormsData || []);
+
+  if (!csvConfigured) {
     qfFormsPanel.innerHTML = `
       <article class="rules-card">
         <h3>Integração pronta</h3>
         <p class="muted">${quarterFinalsFormsConfig.description}</p>
+        <p class="muted">Status do fluxo:</p>
+        <div class="result-chip-row">
+          <span class="result-chip ${submitConfigured ? "hit" : ""}">Envio direto ao Forms: ${submitConfigured ? "ativo" : "pendente"}</span>
+          <span class="result-chip">Leitura CSV para ranking: pendente</span>
+        </div>
         <p class="muted">Colunas esperadas:</p>
         <div class="result-chip-row">
           ${quarterFinalsFormsConfig.expectedColumns.map((column) => `<span class="result-chip">${column}</span>`).join("")}
@@ -1411,17 +1704,27 @@ function renderQuarterFinalsFormsPanel() {
     return;
   }
 
-  if (!quarterFinalsFormsData.length) {
+  if (!rows.length) {
     qfFormsPanel.innerHTML = `
       <article class="rules-card">
         <h3>Respostas do Forms</h3>
-        <p class="muted">A URL está configurada, mas ainda não encontrei respostas publicadas.</p>
+        <p class="muted">A URL está configurada, mas ainda não encontrei respostas publicadas (ou identificadas por participante).</p>
       </article>
     `;
     return;
   }
 
-  qfFormsPanel.innerHTML = qrMatches
+  qfFormsPanel.innerHTML = `
+    <article class="rules-card" style="margin-bottom: 16px;">
+      <h3>Status da integração</h3>
+      <div class="result-chip-row">
+        <span class="result-chip hit">Leitura CSV: ativa</span>
+        <span class="result-chip ${submitConfigured ? "hit" : ""}">Envio direto ao Forms: ${submitConfigured ? "ativo" : "pendente"}</span>
+      </div>
+      <p class="muted">Palpiteiros únicos carregados para cálculo: <strong>${rows.length}</strong>.</p>
+      <p class="muted">No ranking, quando houver mais de uma resposta do mesmo palpiteiro, fica valendo somente a mais recente.</p>
+    </article>
+    ${qrMatches
     .map((match) => `
       <article class="prediction-consult-card" style="margin-bottom: 24px;">
         <div class="prediction-consult-header">
@@ -1442,12 +1745,12 @@ function renderQuarterFinalsFormsPanel() {
               </tr>
             </thead>
             <tbody>
-              ${quarterFinalsFormsData.map((row) => `
+              ${rows.map((entry) => `
                 <tr>
-                  <td><strong>${row.Participante || row.participante || row.Nome || "Sem nome"}</strong></td>
-                  <td style="white-space:nowrap">${row[`${match.id}_ida_home`] || "-"} x ${row[`${match.id}_ida_away`] || "-"}</td>
-                  <td style="white-space:nowrap">${row[`${match.id}_volta_home`] || "-"} x ${row[`${match.id}_volta_away`] || "-"}</td>
-                  <td>${row[`${match.id}_classificado`] || "-"}</td>
+                  <td><strong>${entry.participant || "Sem nome"}</strong></td>
+                  <td style="white-space:nowrap">${entry.row[`${match.id}_ida_home`] || "-"} x ${entry.row[`${match.id}_ida_away`] || "-"}</td>
+                  <td style="white-space:nowrap">${entry.row[`${match.id}_volta_home`] || "-"} x ${entry.row[`${match.id}_volta_away`] || "-"}</td>
+                  <td>${entry.row[`${match.id}_classificado`] || "-"}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1455,11 +1758,13 @@ function renderQuarterFinalsFormsPanel() {
         </div>
       </article>
     `)
-    .join("");
+    .join("")}
+  `;
 }
 
 function renderQuarterFinalsForm() {
   const draft = getQfDraft();
+  const formsSubmissionActive = hasQuarterFormsSubmitConfigured();
   qfPredictForm.innerHTML = `
     <section class="qf-form-shell">
       <article class="form-block">
@@ -1517,8 +1822,12 @@ function renderQuarterFinalsForm() {
       `).join("")}
       </div>
       <div class="form-block qf-actions-block">
-        <button class="primary-button" type="submit">Copiar para WhatsApp</button>
-        <p class="muted">Depois de preencher, o app monta o texto pronto para colar no grupo.</p>
+        <button class="primary-button" type="submit">${formsSubmissionActive ? "Enviar no Forms + Copiar para WhatsApp" : "Copiar para WhatsApp"}</button>
+        <p class="muted">
+          ${formsSubmissionActive
+            ? "Ao enviar, o palpite é salvo no Forms e entra na base oficial do ranking assim que o CSV atualizar."
+            : "Depois de preencher, o app monta o texto pronto para colar no grupo. Para ranking oficial, ative a integração com Forms."}
+        </p>
       </div>
       <p id="qf-feedback" class="feedback"></p>
     </section>
@@ -1530,17 +1839,53 @@ function renderQuarterFinalsForm() {
     saveQfDraftField(field.name, field.value);
   };
 
-  qfPredictForm.onsubmit = (e) => {
+  qfPredictForm.onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
+    const feedbackEl = document.querySelector("#qf-feedback");
     const message = buildQfWhatsAppMessage(fd);
-    navigator.clipboard.writeText(message).then(() => {
-      document.querySelector("#qf-feedback").textContent = "Copiado para a área de transferência! Cole no grupo do WhatsApp.";
-      document.querySelector("#qf-feedback").classList.add("success");
-    }).catch((err) => {
-      document.querySelector("#qf-feedback").textContent = "Erro ao copiar: " + err;
-      document.querySelector("#qf-feedback").classList.remove("success");
-    });
+    let copied = false;
+
+    try {
+      await navigator.clipboard.writeText(message);
+      copied = true;
+    } catch (error) {
+      feedbackEl.textContent = `Erro ao copiar: ${error}`;
+      feedbackEl.classList.remove("success");
+      return;
+    }
+
+    if (!formsSubmissionActive) {
+      feedbackEl.textContent =
+        "Copiado para a área de transferência. Para entrar no ranking oficial, envie também pelo Forms.";
+      feedbackEl.classList.add("success");
+      return;
+    }
+
+    try {
+      const submitResult = await submitQuarterPicksToForms(fd);
+      if (!submitResult.ok) {
+        feedbackEl.textContent =
+          "Copiado para WhatsApp, mas o envio ao Forms não está configurado.";
+        feedbackEl.classList.remove("success");
+        return;
+      }
+
+      if (hasQuarterFormsCsvConfigured()) {
+        await loadQuarterFinalsFormsData();
+      }
+      renderApp();
+      const refreshedFeedbackEl = document.querySelector("#qf-feedback") || feedbackEl;
+      refreshedFeedbackEl.textContent =
+        copied
+          ? "Palpite enviado ao Forms e copiado para WhatsApp. Esse envio entra na base usada no ranking."
+          : "Palpite enviado ao Forms. Esse envio entra na base usada no ranking.";
+      refreshedFeedbackEl.classList.add("success");
+    } catch (error) {
+      feedbackEl.textContent =
+        `Copiado para WhatsApp, mas falhou o envio ao Forms: ${error}`;
+      feedbackEl.classList.remove("success");
+    }
   };
 
   const clearButton = document.querySelector("#qf-clear-draft");
