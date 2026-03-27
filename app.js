@@ -497,6 +497,14 @@ function renderMatches() {
     </section>
   `;
 
+  const shouldShowAggregate = (match) => {
+    if (!match.aggregate) return false;
+    const isPlayoffOrRoundOf16 = ["PLAYOFF", "ROUND_OF_16"].includes(match.phase);
+    const isFirstLeg = /ida/i.test(match.roundLabel || "");
+    if (isPlayoffOrRoundOf16 && isFirstLeg) return false;
+    return true;
+  };
+
   if (top8Grid) {
     top8Grid.innerHTML = leaguePhaseTopEight
       .map(
@@ -560,7 +568,7 @@ function renderMatches() {
           renderMatchCard(match, {
             statusLabel: match.status || undefined,
             secondaryLine: [
-              match.aggregate ? `Agregado: ${match.aggregate}` : "",
+              shouldShowAggregate(match) ? `Agregado: ${match.aggregate}` : "",
               match.qualified ? `Classificado: ${match.qualified}` : "",
               formatKickoff(match.kickoff),
             ]
