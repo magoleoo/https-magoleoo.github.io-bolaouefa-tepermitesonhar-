@@ -764,36 +764,112 @@ function renderSuperclassicPanel() {
     `
     : "";
 
+  const matrixStyles = `
+    <style>
+      .predictions-matrix-table { width: 100%; border-collapse: collapse; text-align: center; }
+      .predictions-matrix-table th { background: var(--clr-surface-200); padding: 1rem; border: 1px solid var(--clr-surface-300); font-weight:500; font-size:0.85rem; }
+      .predictions-matrix-table td { padding: 1rem; border: 1px solid var(--clr-surface-300); }
+      .predictions-matrix-table td.participant-name { text-align: left; font-weight: bold; background: var(--clr-surface-100); position: sticky; left: 0; z-index: 2; width: 150px;}
+      .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; border: 1px solid var(--clr-surface-300); }
+      .superclassic-pick-cell { background: rgba(255, 200, 0, 0.1); color: #ffe6a0; font-weight: 600; }
+    </style>
+  `;
+
+  const participantOrder = new Map(
+    participants.map((participant, index) => [normalizeText(participant.name), index])
+  );
+
+  const sortParticipants = (nameA, nameB) => {
+    const posA = participantOrder.get(normalizeText(nameA));
+    const posB = participantOrder.get(normalizeText(nameB));
+    if (typeof posA === "number" && typeof posB === "number") return posA - posB;
+    if (typeof posA === "number") return -1;
+    if (typeof posB === "number") return 1;
+    return nameA.localeCompare(nameB, "pt-BR");
+  };
+
+  const renderSuperclassicMatrix = (block) => {
+    const matchCols = (block.matches || []).map((match) => ({
+      label: match.title,
+      key: normalizeText(match.title),
+    }));
+
+    const picksByParticipant = new Map();
+    (block.submissions || []).forEach((submission) => {
+      const byTitle = new Map();
+      (submission.predictions || []).forEach((prediction) => {
+        const home = String(prediction.home || "").trim();
+        const away = String(prediction.away || "").trim();
+        if (home === "" || away === "") return;
+        byTitle.set(normalizeText(prediction.title || ""), `${home}x${away}`);
+      });
+      if (submission.participant) {
+        picksByParticipant.set(submission.participant, byTitle);
+      }
+    });
+
+    const participantNames = Array.from(picksByParticipant.keys()).sort(sortParticipants);
+
+    return `
+      <div class="table-wrapper">
+        <table class="predictions-matrix-table">
+          <thead>
+            <tr>
+              <th class="participant-name">Participante</th>
+              ${matchCols
+                .map(
+                  (match) => `
+                    <th>
+                      <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">Superclássico</div>
+                      <div style="margin-bottom:8px;">${match.label}</div>
+                      <div style="display:inline-block; background:var(--clr-surface-400); color:white; padding:2px 8px; border-radius:12px;">Palpite</div>
+                    </th>
+                  `
+                )
+                .join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${participantNames
+              .map((participantName) => {
+                const picksByTitle = picksByParticipant.get(participantName) || new Map();
+                return `
+                  <tr>
+                    <td class="participant-name">
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${participantName.charAt(0)}</div>
+                        ${participantName}
+                      </div>
+                    </td>
+                    ${matchCols
+                      .map((match) => {
+                        const pick = picksByTitle.get(match.key) || "-";
+                        return `<td class="${pick === "-" ? "" : "superclassic-pick-cell"}">${pick}</td>`;
+                      })
+                      .join("")}
+                  </tr>
+                `;
+              })
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  };
+
   const blockMarkup = blocks
     .map(
       (block, index) => `
         <article class="rules-card">
           <h3>Bloco ${index + 1}</h3>
           <p class="muted">${block.matches.map((match) => match.title).join(" • ")}</p>
-          <div class="superclassic-submissions">
-            ${block.submissions
-              .map(
-                (submission) => `
-                  <article class="league-row-card">
-                    <strong>${submission.participant}</strong>
-                    ${submission.predictions
-                      .map(
-                        (prediction) => `
-                          <span class="muted">${prediction.title}: ${prediction.home} x ${prediction.away}</span>
-                        `
-                      )
-                      .join("")}
-                  </article>
-                `
-              )
-              .join("")}
-          </div>
+          ${renderSuperclassicMatrix(block)}
         </article>
       `
     )
     .join("");
 
-  superclassicPanel.innerHTML = `${manualMarkup}${blockMarkup}`;
+  superclassicPanel.innerHTML = `${matrixStyles}${manualMarkup}${blockMarkup}`;
 }
 
 function setActiveTab(tab) {
