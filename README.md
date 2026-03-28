@@ -42,3 +42,11 @@ Agora o projeto também tem uma base de backend em [backend/README.md](/Users/le
 - rotas HTTP para ranking, jogos, sync e recálculo
 - sincronização preparada para API-Football
 - motor de pontuação isolado do frontend
+
+## Forms para operação recorrente
+
+Para rodar o bolão temporada após temporada com Google Forms:
+
+- fluxo técnico: [docs/forms-flow.md](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/docs/forms-flow.md)
+- script de criação dos Forms: [tools/forms/create_bolao_forms.gs](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/forms/create_bolao_forms.gs)
+- guia rápido: [tools/forms/README.md](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/forms/README.md)
