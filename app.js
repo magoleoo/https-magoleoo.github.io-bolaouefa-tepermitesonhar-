@@ -14,6 +14,7 @@ const {
   rulesHighlights,
   rulesSections,
   superclassicConfig,
+  superclassicData,
   teamLogos,
   winnersHistory,
 } = window;
@@ -402,8 +403,94 @@ function normalizeSuperclassicPicks(rawPicks) {
     .filter((pick) => pick.participant && pick.pick);
 }
 
+function getSuperclassicFixtureKey(label) {
+  const parsed = splitFixtureLabel(label);
+  if (!parsed) return normalizeText(label || "");
+  return `${canonicalTeamKey(parsed.homeTeam)}::${canonicalTeamKey(parsed.awayTeam)}`;
+}
+
+function mergeSuperclassicPicks(...groups) {
+  const merged = new Map();
+  groups.forEach((group) => {
+    (group || []).forEach((pick) => {
+      const participant = String(pick?.participant || "").trim();
+      const score = normalizeScoreToken(pick?.pick);
+      if (!participant || !score) return;
+      merged.set(normalizeText(participant), { participant, pick: score });
+    });
+  });
+  return [...merged.values()].sort((a, b) =>
+    a.participant.localeCompare(b.participant, "pt-BR")
+  );
+}
+
+function buildLegacySuperclassicPicksByMatch() {
+  const blocks = Array.isArray(superclassicData?.blocks) ? superclassicData.blocks : [];
+  if (!blocks.length) return new Map();
+
+  const participantsByKey = new Map(
+    participants.map((participant) => [normalizeText(participant.name), participant.name])
+  );
+  const canonicalParticipant = (rawName) =>
+    participantsByKey.get(normalizeText(rawName || "")) || String(rawName || "").trim();
+
+  const byMatch = new Map();
+  blocks.forEach((block) => {
+    const submissions = Array.isArray(block?.submissions) ? block.submissions : [];
+    submissions.forEach((submission) => {
+      const participant = canonicalParticipant(submission?.participant);
+      if (!participant) return;
+
+      const predictions = Array.isArray(submission?.predictions) ? submission.predictions : [];
+      predictions.forEach((prediction) => {
+        const title = String(prediction?.title || "").trim();
+        if (!title) return;
+
+        const home = parseIntegerScore(prediction?.home);
+        const away = parseIntegerScore(prediction?.away);
+        if (!Number.isFinite(home) || !Number.isFinite(away)) return;
+
+        const key = getSuperclassicFixtureKey(title);
+        if (!byMatch.has(key)) {
+          byMatch.set(key, new Map());
+        }
+        byMatch
+          .get(key)
+          .set(normalizeText(participant), { participant, pick: `${home}x${away}` });
+      });
+    });
+  });
+
+  const flattened = new Map();
+  byMatch.forEach((picksMap, key) => {
+    flattened.set(
+      key,
+      [...picksMap.values()].sort((a, b) => a.participant.localeCompare(b.participant, "pt-BR"))
+    );
+  });
+  return flattened;
+}
+
+function buildLegacySuperclassicTitleIndex() {
+  const blocks = Array.isArray(superclassicData?.blocks) ? superclassicData.blocks : [];
+  const titlesByKey = new Map();
+
+  blocks.forEach((block) => {
+    const matches = Array.isArray(block?.matches) ? block.matches : [];
+    matches.forEach((match) => {
+      const title = String(match?.title || "").trim();
+      if (!title) return;
+      titlesByKey.set(getSuperclassicFixtureKey(title), title);
+    });
+  });
+
+  return titlesByKey;
+}
+
 function buildAutomaticSuperclassicFixtures() {
   const fixturesByKey = new Map();
+  const legacyLeaguePicksByMatch = buildLegacySuperclassicPicksByMatch();
+  const legacyTitlesByMatch = buildLegacySuperclassicTitleIndex();
   const officialScoreByTeams = new Map(
     (leaguePhaseResults || []).map((match) => [
       `${canonicalTeamKey(match.homeTeam)}::${canonicalTeamKey(match.awayTeam)}`,
@@ -457,17 +544,23 @@ function buildAutomaticSuperclassicFixtures() {
       if (phaseKey === "LEAGUE" && matchday) phaseDetail = matchday;
       if (leg) phaseDetail = `${phaseDetail} • ${leg.toUpperCase()}`;
 
+      const title = `${parsed.homeTeam} x ${parsed.awayTeam}`;
+      const titleKey = getSuperclassicFixtureKey(title);
+      const phasePicks = normalizeSuperclassicPicks(fixture.picks);
+      const fallbackPicks =
+        phaseKey === "LEAGUE" ? legacyLeaguePicksByMatch.get(titleKey) || [] : [];
+
       upsertFixture({
         phase: phaseKey,
         phaseDetail,
-        title: `${parsed.homeTeam} x ${parsed.awayTeam}`,
+        title,
         official:
           phaseKey === "LEAGUE"
             ? officialScoreByTeams.get(
                 `${canonicalTeamKey(parsed.homeTeam)}::${canonicalTeamKey(parsed.awayTeam)}`
               ) || normalizeScoreToken(fixture.official)
             : normalizeScoreToken(fixture.official),
-        picks: normalizeSuperclassicPicks(fixture.picks),
+        picks: mergeSuperclassicPicks(fallbackPicks, phasePicks),
       });
     });
   });
@@ -495,6 +588,32 @@ function buildAutomaticSuperclassicFixtures() {
       picks: [],
     });
   });
+
+  const hasLeaguePicks = [...fixturesByKey.values()].some(
+    (fixture) => fixture.phase === "LEAGUE" && (fixture.picks || []).length > 0
+  );
+
+  if (!hasLeaguePicks && legacyLeaguePicksByMatch.size) {
+    legacyLeaguePicksByMatch.forEach((picks, matchKey) => {
+      const fallbackTitle = legacyTitlesByMatch.get(matchKey);
+      if (!fallbackTitle) return;
+
+      const parsed = splitFixtureLabel(fallbackTitle);
+      if (!parsed) return;
+      if (!isEligibleSuperclassicMatch(parsed.homeTeam, parsed.awayTeam)) return;
+
+      upsertFixture({
+        phase: "LEAGUE",
+        phaseDetail: "Primeira fase",
+        title: `${parsed.homeTeam} x ${parsed.awayTeam}`,
+        official:
+          officialScoreByTeams.get(
+            `${canonicalTeamKey(parsed.homeTeam)}::${canonicalTeamKey(parsed.awayTeam)}`
+          ) || "",
+        picks: mergeSuperclassicPicks(picks),
+      });
+    });
+  }
 
   const fixtures = [...fixturesByKey.values()];
   fixtures.sort((a, b) => {
@@ -1372,12 +1491,16 @@ function renderSuperclassicPanel() {
   const renderLeagueSuperclassicTable = (phaseFixtures) => {
     if (!phaseFixtures.length) return "";
 
+    const legacyPicksByMatch = buildLegacySuperclassicPicksByMatch();
     const matchCols = phaseFixtures.map((fixture) => ({
       key: fixture.key,
       label: fixture.title,
       detail: fixture.phaseDetail,
       official: fixture.official,
-      picks: fixture.picks || [],
+      picks: mergeSuperclassicPicks(
+        legacyPicksByMatch.get(getSuperclassicFixtureKey(fixture.title)) || [],
+        fixture.picks || []
+      ),
     }));
 
     const picksByParticipant = new Map();

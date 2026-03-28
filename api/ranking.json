@@ -8,11 +8,15 @@
       "first_phase_points": 106.9,
       "playoff_points": 14.0,
       "round_of_16_points": 56.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 6.8,
       "hope_solo_hits": 1,
       "favorite_team": "Real Madrid",
       "scorer_pick": "Erling Haaland",
-      "assist_pick": "Vitinha"
+      "assist_pick": "Vitinha",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "serginho",
@@ -21,11 +25,15 @@
       "first_phase_points": 102.6,
       "playoff_points": 20.5,
       "round_of_16_points": 51.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 1.7,
       "hope_solo_hits": 1,
       "favorite_team": "Barcelona",
       "scorer_pick": "João Pedro",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "biel",
@@ -34,11 +42,15 @@
       "first_phase_points": 93.55,
       "playoff_points": 10.5,
       "round_of_16_points": 58.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 5.1,
       "hope_solo_hits": 0,
       "favorite_team": "Liverpool",
       "scorer_pick": "Ekitike",
-      "assist_pick": "Raphinha"
+      "assist_pick": "Raphinha",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "michel",
@@ -47,11 +59,15 @@
       "first_phase_points": 91.85,
       "playoff_points": 16.0,
       "round_of_16_points": 52.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 3.4,
       "hope_solo_hits": 1,
       "favorite_team": "Liverpool",
       "scorer_pick": "Harry Kane",
-      "assist_pick": "Vinícius Jr."
+      "assist_pick": "Vinícius Jr.",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "gui-giron",
@@ -60,11 +76,15 @@
       "first_phase_points": 103.7,
       "playoff_points": 11.0,
       "round_of_16_points": 43.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 3.4,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Robert Lewandowski",
-      "assist_pick": "Cole Palmer"
+      "assist_pick": "Cole Palmer",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "rafinha",
@@ -73,11 +93,15 @@
       "first_phase_points": 95.0,
       "playoff_points": 13.0,
       "round_of_16_points": 48.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 3.4,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Raphinha",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "enrico",
@@ -86,11 +110,15 @@
       "first_phase_points": 90.15,
       "playoff_points": 13.0,
       "round_of_16_points": 51.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 3.4,
       "hope_solo_hits": 0,
       "favorite_team": "Liverpool",
       "scorer_pick": "Erling Haaland",
-      "assist_pick": "Ousmane Dembélé"
+      "assist_pick": "Ousmane Dembélé",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "ranieri",
@@ -99,11 +127,15 @@
       "first_phase_points": 91.0,
       "playoff_points": 12.0,
       "round_of_16_points": 48.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 5.1,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Robert Lewandowski",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "faber",
@@ -112,11 +144,15 @@
       "first_phase_points": 96.65,
       "playoff_points": 11.0,
       "round_of_16_points": 40.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 6.8,
-      "hope_solo_hits": 1,
+      "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Kylian Mbappé",
-      "assist_pick": "Raphinha"
+      "assist_pick": "Raphinha",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "victor",
@@ -125,11 +161,15 @@
       "first_phase_points": 100.65,
       "playoff_points": 10.5,
       "round_of_16_points": 41.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 1.7,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Robert Lewandowski",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "dan",
@@ -138,11 +178,15 @@
       "first_phase_points": 91.85,
       "playoff_points": 16.0,
       "round_of_16_points": 41.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 3.4,
       "hope_solo_hits": 2,
       "favorite_team": "Liverpool",
       "scorer_pick": "Raphinha",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "scarpa",
@@ -151,11 +195,15 @@
       "first_phase_points": 91.8,
       "playoff_points": 12.0,
       "round_of_16_points": 39.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 8.5,
       "hope_solo_hits": 2,
       "favorite_team": "Barcelona",
       "scorer_pick": "Robert Lewandowski",
-      "assist_pick": "Eberechi Eze"
+      "assist_pick": "Eberechi Eze",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "deco",
@@ -164,11 +212,15 @@
       "first_phase_points": 86.75,
       "playoff_points": 15.0,
       "round_of_16_points": 45.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 3.4,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Kylian Mbappé",
-      "assist_pick": "Vinícius Jr."
+      "assist_pick": "Vinícius Jr.",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "marcel",
@@ -177,11 +229,15 @@
       "first_phase_points": 93.0,
       "playoff_points": 12.0,
       "round_of_16_points": 43.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 1.7,
       "hope_solo_hits": 0,
       "favorite_team": "Paris Saint-Germain",
       "scorer_pick": "Erling Haaland",
-      "assist_pick": "Désiré Doué"
+      "assist_pick": "Désiré Doué",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "leo-raposo",
@@ -190,11 +246,15 @@
       "first_phase_points": 95.0,
       "playoff_points": 11.5,
       "round_of_16_points": 40.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 1.7,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Mohamed Salah",
-      "assist_pick": "Mohamed Salah"
+      "assist_pick": "Mohamed Salah",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "feijão",
@@ -203,11 +263,15 @@
       "first_phase_points": 88.5,
       "playoff_points": 15.5,
       "round_of_16_points": 39.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 5.1,
       "hope_solo_hits": 2,
       "favorite_team": "Paris Saint-Germain",
       "scorer_pick": "Ousmane Dembélé",
-      "assist_pick": "Raphinha"
+      "assist_pick": "Raphinha",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "leo-picca",
@@ -216,11 +280,15 @@
       "first_phase_points": 83.1,
       "playoff_points": 12.5,
       "round_of_16_points": 46.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 5.1,
       "hope_solo_hits": 0,
       "favorite_team": "Real Madrid",
       "scorer_pick": "Kylian Mbappé",
-      "assist_pick": "Phil Foden"
+      "assist_pick": "Phil Foden",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "muca",
@@ -229,11 +297,15 @@
       "first_phase_points": 91.6,
       "playoff_points": 12.0,
       "round_of_16_points": 34.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 6.8,
       "hope_solo_hits": 0,
       "favorite_team": "Barcelona",
       "scorer_pick": "Erling Haaland",
-      "assist_pick": "Mohamed Salah"
+      "assist_pick": "Mohamed Salah",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "ivan",
@@ -242,11 +314,15 @@
       "first_phase_points": 81.7,
       "playoff_points": 17.0,
       "round_of_16_points": 39.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 1.7,
       "hope_solo_hits": 1,
       "favorite_team": "Barcelona",
       "scorer_pick": "Raphinha",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "celsinho",
@@ -255,11 +331,15 @@
       "first_phase_points": 90.15,
       "playoff_points": 12.5,
       "round_of_16_points": 28.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 5.1,
       "hope_solo_hits": 1,
       "favorite_team": "Barcelona",
       "scorer_pick": "Raphinha",
-      "assist_pick": "Cole Palmer"
+      "assist_pick": "Cole Palmer",
+      "delta_vs_ranking_sheet": 0.0
     },
     {
       "participant_id": "nanel",
@@ -268,11 +348,15 @@
       "first_phase_points": 92.5,
       "playoff_points": 13.5,
       "round_of_16_points": 21.0,
+      "quarter_points": 0.0,
+      "semi_points": 0.0,
+      "final_points": 0.0,
       "superclassic_points": 6.8,
       "hope_solo_hits": 0,
       "favorite_team": "Chelsea",
       "scorer_pick": "Harry Kane",
-      "assist_pick": "Lamine Yamal"
+      "assist_pick": "Lamine Yamal",
+      "delta_vs_ranking_sheet": 0.0
     }
   ],
   "phases": {
@@ -4901,112 +4985,112 @@
           "label": "Bayern de Munique x Chelsea",
           "home": "Bayern de Munique",
           "away": "Chelsea",
-          "official": "Bayern de Munique",
+          "official": "3x1",
           "picks": [
             {
               "participant": "Leo Picca",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Leo Raposo",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             },
             {
               "participant": "Serginho",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Biel",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Rafinha",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Ranieri",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Nanel",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "3.4"
             },
             {
               "participant": "Marcel",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Dan",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "0"
             },
             {
               "participant": "Celsinho",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Enrico",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             },
             {
               "participant": "Gui Giron",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Scarpa",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Victor",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             },
             {
               "participant": "Faber",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "0"
             },
             {
               "participant": "Felippe Leite",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "3.4"
             },
             {
               "participant": "Muca",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Feijão",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Ivan",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             },
             {
               "participant": "Michel",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "0"
             },
             {
               "participant": "Deco",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             }
           ]
         },
@@ -7865,112 +7949,112 @@
           "label": "Barcelona x Paris Saint-Germain",
           "home": "Barcelona",
           "away": "Paris Saint-Germain",
-          "official": "Paris Saint-Germain",
+          "official": "1x2",
           "picks": [
             {
               "participant": "Leo Picca",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Leo Raposo",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Serginho",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Biel",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Rafinha",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Ranieri",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x3",
+              "rank_value": "1.7"
             },
             {
               "participant": "Nanel",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Marcel",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Dan",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Celsinho",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Enrico",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Gui Giron",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "0"
             },
             {
               "participant": "Scarpa",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "0"
             },
             {
               "participant": "Victor",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Faber",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Felippe Leite",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "3x3",
+              "rank_value": "0"
             },
             {
               "participant": "Muca",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Feijão",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Ivan",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Michel",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "1.7"
             },
             {
               "participant": "Deco",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             }
           ]
         },
@@ -10259,112 +10343,112 @@
           "label": "Paris Saint-Germain x Bayern de Munique",
           "home": "Paris Saint-Germain",
           "away": "Bayern de Munique",
-          "official": "Bayern de Munique",
+          "official": "1x2",
           "picks": [
             {
               "participant": "Leo Picca",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Leo Raposo",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Serginho",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "0"
             },
             {
               "participant": "Biel",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Rafinha",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Ranieri",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Nanel",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Marcel",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Dan",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Celsinho",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "0x0",
+              "rank_value": "0"
             },
             {
               "participant": "Enrico",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Gui Giron",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "0"
             },
             {
               "participant": "Scarpa",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Victor",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Faber",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "3.4"
             },
             {
               "participant": "Felippe Leite",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Muca",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Feijão",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "1.7"
             },
             {
               "participant": "Ivan",
-              "pick": "Bayern de Munique",
-              "rank_value": ""
+              "pick": "1x0",
+              "rank_value": "0"
             },
             {
               "participant": "Michel",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Deco",
-              "pick": "Paris Saint-Germain",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             }
           ]
         },
@@ -10373,112 +10457,112 @@
           "label": "Liverpool x Real Madrid",
           "home": "Liverpool",
           "away": "Real Madrid",
-          "official": "Liverpool",
+          "official": "1x0",
           "picks": [
             {
               "participant": "Leo Picca",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Leo Raposo",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "0x0",
+              "rank_value": "0"
             },
             {
               "participant": "Serginho",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "0x1",
+              "rank_value": "0"
             },
             {
               "participant": "Biel",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "1.7"
             },
             {
               "participant": "Rafinha",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             },
             {
               "participant": "Ranieri",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x3",
+              "rank_value": "0"
             },
             {
               "participant": "Nanel",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Marcel",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             },
             {
               "participant": "Dan",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Celsinho",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "1x0",
+              "rank_value": "3.4"
             },
             {
               "participant": "Enrico",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Gui Giron",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Scarpa",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Victor",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x3",
+              "rank_value": "0"
             },
             {
               "participant": "Faber",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Felippe Leite",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "1.7"
             },
             {
               "participant": "Muca",
-              "pick": "Liverpool",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "1.7"
             },
             {
               "participant": "Feijão",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Ivan",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "1x1",
+              "rank_value": "0"
             },
             {
               "participant": "Michel",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Deco",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             }
           ]
         },
@@ -12425,112 +12509,112 @@
           "label": "Chelsea x Barcelona",
           "home": "Chelsea",
           "away": "Barcelona",
-          "official": "Chelsea",
+          "official": "3x0",
           "picks": [
             {
               "participant": "Leo Picca",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Leo Raposo",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Serginho",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x0",
+              "rank_value": "1.7"
             },
             {
               "participant": "Biel",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Rafinha",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Ranieri",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "4x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Nanel",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Marcel",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Dan",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Celsinho",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Enrico",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Gui Giron",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "1.7"
             },
             {
               "participant": "Scarpa",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "1x0",
+              "rank_value": "1.7"
             },
             {
               "participant": "Victor",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Faber",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Felippe Leite",
-              "pick": "Barcelona",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Muca",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Feijão",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "1.7"
             },
             {
               "participant": "Ivan",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Michel",
-              "pick": "Chelsea",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Deco",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "0"
             }
           ]
         },
@@ -16073,112 +16157,112 @@
           "label": "Real Madrid x Manchester City",
           "home": "Real Madrid",
           "away": "Manchester City",
-          "official": "Manchester City",
+          "official": "1x2",
           "picks": [
             {
               "participant": "Leo Picca",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Leo Raposo",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Serginho",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Biel",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Rafinha",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Ranieri",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "3x2",
+              "rank_value": "0"
             },
             {
               "participant": "Nanel",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Marcel",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Dan",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "1.7"
             },
             {
               "participant": "Celsinho",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "0x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Enrico",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "3.4"
             },
             {
               "participant": "Gui Giron",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "1x0",
+              "rank_value": "0"
             },
             {
               "participant": "Scarpa",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "3.4"
             },
             {
               "participant": "Victor",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "3x1",
+              "rank_value": "0"
             },
             {
               "participant": "Faber",
-              "pick": "Manchester City",
-              "rank_value": ""
+              "pick": "1x3",
+              "rank_value": "1.7"
             },
             {
               "participant": "Felippe Leite",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             },
             {
               "participant": "Muca",
-              "pick": "Empate",
-              "rank_value": ""
+              "pick": "1x2",
+              "rank_value": "3.4"
             },
             {
               "participant": "Feijão",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "0x2",
+              "rank_value": "1.7"
             },
             {
               "participant": "Ivan",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x2",
+              "rank_value": "0"
             },
             {
               "participant": "Michel",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x0",
+              "rank_value": "0"
             },
             {
               "participant": "Deco",
-              "pick": "Real Madrid",
-              "rank_value": ""
+              "pick": "2x1",
+              "rank_value": "0"
             }
           ]
         },
