@@ -12,6 +12,13 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 
+def parse_env_flag(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def load_env_settings() -> dict[str, Any]:
     return {
         "api_key": os.getenv("API_FOOTBALL_KEY", "").strip(),
@@ -19,10 +26,11 @@ def load_env_settings() -> dict[str, Any]:
         "api_base_url": os.getenv("API_FOOTBALL_BASE_URL", "https://v3.football.api-sports.io").strip(),
         "league_id": int(os.getenv("API_FOOTBALL_LEAGUE_ID", "2")),
         "default_season": int(os.getenv("API_FOOTBALL_SEASON", "2025")),
+        "require_non_empty": parse_env_flag("API_FOOTBALL_REQUIRE_NON_EMPTY", True),
     }
 
 
-def request_fixtures(settings: dict[str, Any], season: int) -> list[dict[str, Any]]:
+def request_fixtures(settings: dict[str, Any], season: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if not settings["api_key"]:
         raise RuntimeError("API_FOOTBALL_KEY não configurada.")
 
@@ -37,7 +45,17 @@ def request_fixtures(settings: dict[str, Any], season: int) -> list[dict[str, An
     )
     with urlopen(request, timeout=40) as response:
         payload = json.loads(response.read().decode("utf-8"))
-    return payload.get("response", [])
+
+    errors = payload.get("errors")
+    if isinstance(errors, dict) and errors:
+        raise RuntimeError(f"API-Football retornou erro(s): {errors}")
+    if isinstance(errors, list) and len(errors) > 0:
+        raise RuntimeError(f"API-Football retornou erro(s): {errors}")
+
+    fixtures = payload.get("response", [])
+    if not isinstance(fixtures, list):
+        raise RuntimeError("Resposta da API-Football em formato inesperado: campo 'response' inválido.")
+    return fixtures, payload
 
 
 def map_phase_key(round_label: str) -> str:
@@ -146,10 +164,23 @@ def main() -> int:
     season = args.season if args.season is not None else settings["default_season"]
 
     project_root = Path(__file__).resolve().parents[1]
-    fixtures = request_fixtures(settings, season)
+    fixtures, payload = request_fixtures(settings, season)
     matches = [normalize_match(item) for item in fixtures]
     matches = [item for item in matches if item.get("id") is not None and item.get("phase_key") != "UNKNOWN"]
     matches.sort(key=lambda item: ((item.get("kickoff_utc") or ""), int(item.get("id") or 0)))
+
+    api_results = payload.get("results")
+    total_fixtures = len(fixtures)
+    if total_fixtures > 0 and len(matches) == 0:
+        raise RuntimeError(
+            "API retornou jogos, mas nenhum foi mapeado para fase conhecida. "
+            "Revisar map_phase_key para o formato atual dos rounds."
+        )
+    if settings["require_non_empty"] and len(matches) == 0:
+        raise RuntimeError(
+            "Sincronização bloqueada: API retornou zero jogos mapeados. "
+            "Verifique chave, cota, temporada, league_id ou status da API."
+        )
 
     write_outputs(project_root, season, matches)
 
@@ -158,7 +189,10 @@ def main() -> int:
         phase = str(item.get("phase_key") or "UNKNOWN")
         phase_counts[phase] = phase_counts.get(phase, 0) + 1
 
-    print(f"[sync_api_matches] Temporada {season} | jogos sincronizados: {len(matches)}")
+    print(
+        f"[sync_api_matches] Temporada {season} | resultados da API: {api_results} | "
+        f"jogos brutos: {total_fixtures} | jogos sincronizados: {len(matches)}"
+    )
     print(f"[sync_api_matches] Por fase: {phase_counts}")
     print(f"[sync_api_matches] Saída: {project_root / 'api' / 'matches.json'}")
     return 0
