@@ -3,7 +3,7 @@ name: Live Scores Sync (API-Football)
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/20 * * * *"
 
 jobs:
   sync-live-scores:
@@ -36,8 +36,24 @@ jobs:
           API_FOOTBALL_BASE_URL: ${{ vars.API_FOOTBALL_BASE_URL }}
           API_FOOTBALL_LEAGUE_ID: ${{ vars.API_FOOTBALL_LEAGUE_ID }}
           API_FOOTBALL_SEASON: ${{ vars.UCL_API_SEASON }}
+          API_FOOTBALL_REQUIRE_NON_EMPTY: "1"
         run: |
           python tools/sync_api_matches.py
+
+      - name: Validar saída da sincronização
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("api/matches.json").read_text(encoding="utf-8"))
+          matches = data.get("matches", [])
+          if not isinstance(matches, list):
+              raise SystemExit("Formato inválido: 'matches' não é lista.")
+          if len(matches) == 0:
+              raise SystemExit("Validação falhou: sync gerou matches vazio.")
+          print(f"Validação OK: {len(matches)} jogos sincronizados.")
+          PY
 
       - name: Commit e push dos placares atualizados
         run: |

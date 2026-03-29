@@ -31,8 +31,8 @@ Depois abra no navegador:
 ## Observações importantes
 
 - Este MVP usa autenticação local no navegador. Para produção, o ideal é trocar por backend com sessões reais.
-- Os placares ao vivo estão simulados localmente para demonstrar atualização automática sem depender de API externa.
-- A integração futura pode substituir a função de live timeline por um provedor real de dados esportivos.
+- O app usa fallback local de resultados quando a API está indisponível, para evitar tela vazia.
+- A sincronização via API-Football está com validação fail-fast para bloquear escrita de `matches` vazio.
 
 ## Próximo passo técnico
 
@@ -56,7 +56,7 @@ Para rodar o bolão temporada após temporada com Google Forms:
 O projeto agora possui um workflow dedicado para placares ao vivo:
 
 - arquivo: `.github/workflows/live-scores-sync.yml`
-- frequência: a cada 10 minutos
+- frequência: a cada 20 minutos
 - saída atualizada automaticamente: `api/matches.json` e `api/matches.js`
 
 ### Configuração no GitHub (uma vez)
@@ -73,6 +73,7 @@ No repositório, abra `Settings > Secrets and variables > Actions` e crie:
 - `API_FOOTBALL_HOST` (padrão: `v3.football.api-sports.io`)
 - `API_FOOTBALL_BASE_URL` (padrão: `https://v3.football.api-sports.io`)
 - `API_FOOTBALL_LEAGUE_ID` (padrão: `2`)
+- `API_FOOTBALL_REQUIRE_NON_EMPTY` (padrão: `true` no workflow, bloqueia sync vazio)
 
 ### Primeiro disparo manual
 
