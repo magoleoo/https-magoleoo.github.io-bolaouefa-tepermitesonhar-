@@ -633,7 +633,7 @@ const hopeSoloByParticipant = {
 
 window.leaguePhaseSnapshot = {
   phaseLabel: "Ranking oficial atualizado até o fim das oitavas",
-  updatedAtLabel: "Ranking importado da imagem enviada pelo usuário em 18/03/2026 e resultados oficiais da UEFA até 18/03/2026",
+  updatedAtLabel: "Base oficial validada pela planilha do bolão e resultados da UEFA.",
   leaderboard: [
     { position: 1, name: "Felippe Leite", total: 183.7, firstPhase: 106.9, playoff: 14, roundOf16: 56, superclassic: 6.8, favoriteTeam: "Real Madrid", assistPick: "Vitinha", scorerPick: "Erling Haaland" },
     { position: 2, name: "Serginho", total: 175.8, firstPhase: 102.6, playoff: 20.5, roundOf16: 51, superclassic: 1.7, favoriteTeam: "Barcelona", assistPick: "Lamine Yamal", scorerPick: "João Pedro" },

@@ -1186,9 +1186,9 @@ function renderOverview(leaderboard) {
       note: biggestRoundOf16 ? `${formatPoints(biggestRoundOf16.roundOf16)} pontos em oitavas` : "-",
     },
     {
-      label: "Fonte oficial",
-      value: "UEFA",
-      note: "resultados cruzados com imagem do ranking",
+      label: "Base oficial",
+      value: "Planilha do bolão",
+      note: "ranking auditado com as regras oficiais",
     },
   ]
     .map(
@@ -1475,7 +1475,7 @@ function renderParticipantSnapshot() {
 
   const row = participantSnapshots[participant.id];
   if (!row) {
-    predictionsForm.innerHTML = "<p class='muted'>Ainda não encontrei o recorte desse participante na imagem oficial do ranking.</p>";
+    predictionsForm.innerHTML = "<p class='muted'>Ainda não encontrei o recorte oficial desse participante na base atual.</p>";
     return;
   }
 
@@ -1525,25 +1525,11 @@ function renderParticipantSnapshot() {
           <input value="${row.assistPick}" disabled />
         </label>
         <label>
-          Fonte do ranking
-          <input value="Imagem oficial enviada + UEFA" disabled />
+          Base de cálculo
+          <input value="Planilha oficial do bolão" disabled />
         </label>
       </div>
     </section>
-    <section class="form-block">
-      <p class="eyebrow">Fontes usadas</p>
-      <div class="classification-grid">
-        <label>
-          Ranking local
-          <input value="${officialSources.rankingImage}" disabled />
-        </label>
-        <label>
-          Resultados oficiais
-          <input value="${officialSources.uefaResultsUrl}" disabled />
-        </label>
-      </div>
-    </section>
-    <p class="feedback success">${leaguePhaseSnapshot.updatedAtLabel}</p>
   `;
 }
 
