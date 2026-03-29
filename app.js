@@ -88,6 +88,7 @@ function getParticipantById(id) {
 }
 
 let knockoutResults = [...staticKnockoutResults];
+let liveLeaguePhaseResults = [];
 let activeResultsTab = "LEAGUE";
 let activeLeagueMatchday = "1";
 
@@ -1107,26 +1108,40 @@ function renderMatches() {
   let contentMarkup = "";
 
   if (activeResultsTab === "LEAGUE") {
-    const grouped = leaguePhaseResults.reduce((acc, match) => {
-      const matchdayNumber = match.matchday.replace(/\D/g, "");
+    const leagueSource = liveLeaguePhaseResults.length ? liveLeaguePhaseResults : leaguePhaseResults;
+    const grouped = leagueSource.reduce((acc, match) => {
+      const matchdayNumber = String(match.matchday || "Matchday 0").replace(/\D/g, "") || "0";
       if (!acc[matchdayNumber]) acc[matchdayNumber] = [];
       acc[matchdayNumber].push(match);
       return acc;
     }, {});
+    const matchdayKeys = Object.keys(grouped).sort((a, b) => Number(a) - Number(b));
+    const effectiveMatchday = matchdayKeys.includes(activeLeagueMatchday)
+      ? activeLeagueMatchday
+      : (matchdayKeys[0] || "1");
+    if (effectiveMatchday !== activeLeagueMatchday) {
+      activeLeagueMatchday = effectiveMatchday;
+    }
 
     const phaseTabs = `
       <div class="tabs-bar" style="margin-bottom: 24px;">
-        ${Object.keys(grouped).sort((a,b) => Number(a)-Number(b)).map(md => `
+        ${matchdayKeys.map(md => `
           <button class="tab-button ${activeLeagueMatchday === md ? "is-active" : ""}" onclick="setLeagueMatchday('${md}')">Rodada ${md}</button>
         `).join("")}
       </div>
     `;
 
-    const matchesForActiveMatchday = grouped[activeLeagueMatchday] || [];
+    const matchesForActiveMatchday = grouped[effectiveMatchday] || [];
     
-    const phasesMarkup = renderGroup(`Rodada ${activeLeagueMatchday}`, matchesForActiveMatchday, (match, index) =>
+    const phasesMarkup = renderGroup(`Rodada ${effectiveMatchday}`, matchesForActiveMatchday, (match, index) =>
       renderMatchCard(match, {
-        matchId: createLeagueMatchId(`Matchday ${activeLeagueMatchday}`, index),
+        statusLabel: match.status || undefined,
+        secondaryLine: [
+          formatKickoff(match.kickoff),
+        ]
+          .filter(Boolean)
+          .join(" • "),
+        matchId: createLeagueMatchId(`Matchday ${effectiveMatchday}`, index),
       })
     );
 
@@ -2647,21 +2662,70 @@ function renderApp() {
 function loadImmediateData() {
   backtestData = window.backtestData || { ranking: [] };
   leaguePhaseData = window.leaguePhaseData || { records: [] };
+  const toNumberOrNull = (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+  const normalizePhaseKey = (rawPhase) => {
+    const normalized = normalizeText(String(rawPhase || ""));
+    if (normalized === "round of 16" || normalized === "round_of_16") return "ROUND_OF_16";
+    if (normalized === "quarter finals" || normalized === "quarter") return "QUARTER";
+    if (normalized === "semi finals" || normalized === "semi") return "SEMI";
+    if (normalized === "playoff" || normalized === "play offs" || normalized === "play-off") return "PLAYOFF";
+    if (normalized === "league") return "LEAGUE";
+    if (normalized === "final") return "FINAL";
+    return String(rawPhase || "").toUpperCase();
+  };
+  const resolveStatusLabel = (statusShort, home, away) => {
+    const key = String(statusShort || "").toUpperCase();
+    if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "SUSP", "INT"].includes(key)) return "Ao vivo";
+    if (["FT", "AET", "PEN"].includes(key)) return "Finalizado";
+    if (home !== null && away !== null) return "Finalizado";
+    return "Agendado";
+  };
+  const leagueMatchdayFromRound = (roundLabel) => {
+    const text = String(roundLabel || "");
+    const match = text.match(/(\d+)/);
+    const value = match ? Number(match[1]) : 0;
+    return `Matchday ${Number.isFinite(value) && value > 0 ? value : 0}`;
+  };
+
   if (window.apiMatchesData?.matches?.length) {
-    knockoutResults = window.apiMatchesData.matches.map(m => ({
-      id: m.id.toString(),
-      phase: m.phase_key,
-      roundLabel: m.round_label,
-      kickoff: m.kickoff_utc,
-      homeTeam: m.home_team_name,
-      awayTeam: m.away_team_name,
-      scoreFinal: { home: m.score_home_90, away: m.score_away_90 },
-      aggregate: m.score_home_90 !== null ? `${m.score_home_90}-${m.score_away_90}` : null,
-      qualified: m.qualified_team_name,
-      status: m.score_home_90 !== null && m.score_away_90 !== null ? "Finalizado" : "Agendado",
-    }));
+    const mappedMatches = window.apiMatchesData.matches.map((m) => {
+      const homeScore = toNumberOrNull(m.score_home_90);
+      const awayScore = toNumberOrNull(m.score_away_90);
+      const phase = normalizePhaseKey(m.phase_key);
+      return {
+        id: String(m.id ?? ""),
+        phase,
+        roundLabel: String(m.round_label || ""),
+        kickoff: m.kickoff_utc || null,
+        homeTeam: String(m.home_team_name || ""),
+        awayTeam: String(m.away_team_name || ""),
+        scoreFinal: { home: homeScore, away: awayScore },
+        aggregate: homeScore !== null && awayScore !== null ? `${homeScore}-${awayScore}` : null,
+        qualified: m.qualified_team_name || null,
+        status: resolveStatusLabel(m.status_short, homeScore, awayScore),
+        statusShort: String(m.status_short || "").toUpperCase(),
+        matchday: leagueMatchdayFromRound(m.round_label),
+      };
+    });
+    knockoutResults = mappedMatches.filter((match) => match.phase !== "LEAGUE");
+    liveLeaguePhaseResults = mappedMatches
+      .filter((match) => match.phase === "LEAGUE")
+      .map((match) => ({
+        id: match.id,
+        phase: "LEAGUE",
+        matchday: match.matchday,
+        homeTeam: match.homeTeam,
+        awayTeam: match.awayTeam,
+        scoreFinal: match.scoreFinal,
+        status: match.status,
+        kickoff: match.kickoff,
+      }));
   } else {
     knockoutResults = staticKnockoutResults;
+    liveLeaguePhaseResults = [];
   }
 }
 

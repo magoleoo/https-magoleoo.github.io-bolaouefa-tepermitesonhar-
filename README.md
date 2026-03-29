@@ -50,3 +50,34 @@ Para rodar o bolão temporada após temporada com Google Forms:
 - fluxo técnico: [docs/forms-flow.md](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/docs/forms-flow.md)
 - script de criação dos Forms: [tools/forms/create_bolao_forms.gs](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/forms/create_bolao_forms.gs)
 - guia rápido: [tools/forms/README.md](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/forms/README.md)
+
+## Atualização automática de placares (API-Football)
+
+O projeto agora possui um workflow dedicado para placares ao vivo:
+
+- arquivo: `.github/workflows/live-scores-sync.yml`
+- frequência: a cada 10 minutos
+- saída atualizada automaticamente: `api/matches.json` e `api/matches.js`
+
+### Configuração no GitHub (uma vez)
+
+No repositório, abra `Settings > Secrets and variables > Actions` e crie:
+
+1. Secret obrigatório:
+- `API_FOOTBALL_KEY` = sua chave da API-Football
+
+2. Variável recomendada:
+- `UCL_API_SEASON` = `2025` para a edição Champions 2025/26
+
+3. Variáveis opcionais (se quiser sobrescrever padrão):
+- `API_FOOTBALL_HOST` (padrão: `v3.football.api-sports.io`)
+- `API_FOOTBALL_BASE_URL` (padrão: `https://v3.football.api-sports.io`)
+- `API_FOOTBALL_LEAGUE_ID` (padrão: `2`)
+
+### Primeiro disparo manual
+
+1. Abra `Actions` no GitHub.
+2. Selecione `Live Scores Sync (API-Football)`.
+3. Clique em `Run workflow`.
+
+Depois disso, o job agendado mantém os placares atualizados automaticamente.
