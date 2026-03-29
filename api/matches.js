@@ -1,1 +1,1 @@
-window.apiMatchesData = {"season": 2025, "generated_at": "2026-03-29T14:58:42.579934+00:00", "matches": []};
+window.apiMatchesData = {"matches": []};

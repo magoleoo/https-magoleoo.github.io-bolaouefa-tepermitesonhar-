@@ -1,42 +1,45 @@
+#!/usr/bin/env python3
 import json
-import sys
+from pathlib import Path
 
-def outcome(h, a):
-    if h is None or a is None: return None
-    if h > a: return 'home'
-    if a > h: return 'away'
-    return 'draw'
 
-with open('league-phase.json') as f:
-    data = json.load(f)
+def main() -> int:
+    project_root = Path(__file__).resolve().parents[1]
+    ranking_path = project_root / "api" / "ranking.json"
 
-hope_solos = {}
-matches_analyzed = 0
+    if not ranking_path.exists():
+        print(f"Arquivo não encontrado: {ranking_path}")
+        return 1
 
-for item in data.get('records', []):
-    match = item.get('match', {})
-    off_h = match.get('score', {}).get('fullTime', {}).get('home')
-    off_a = match.get('score', {}).get('fullTime', {}).get('away')
-    
-    if off_h is None or off_a is None:
-        continue
-    matches_analyzed += 1
-    
-    correct_outcomes = []
-    
-    for p in item.get('participantPredictions', []):
-        pred_h = p.get('prediction', {}).get('home')
-        pred_a = p.get('prediction', {}).get('away')
-        if pred_h is None or pred_a is None:
-            continue
-            
-        if outcome(pred_h, pred_a) == outcome(off_h, off_a):
-            correct_outcomes.append(p.get('name'))
-            
-    if len(correct_outcomes) == 1:
-        winner = correct_outcomes[0]
-        hope_solos[winner] = hope_solos.get(winner, 0) + 1
-        print(f"Hope Solo em {match.get('homeTeam', {}).get('shortName')} x {match.get('awayTeam', {}).get('shortName')} - Vencedor: {winner}")
+    with ranking_path.open("r", encoding="utf-8") as handler:
+        payload = json.load(handler)
 
-print(f"Partidas analisadas: {matches_analyzed}")
-print("Resultados Finais Hope Solo (Fase de Grupos):", hope_solos)
+    ranking_rows = payload.get("ranking", [])
+    phases = payload.get("phases", {})
+    matches_analyzed = sum(len(phase.get("fixtures", [])) for phase in phases.values())
+
+    hope_solos = sorted(
+        (
+            {
+                "name": row.get("name", ""),
+                "hits": int(row.get("hope_solo_hits", 0) or 0),
+            }
+            for row in ranking_rows
+            if int(row.get("hope_solo_hits", 0) or 0) > 0
+        ),
+        key=lambda item: (-item["hits"], item["name"]),
+    )
+
+    print(f"Partidas analisadas: {matches_analyzed}")
+    if not hope_solos:
+        print("Nenhum Hope Solo identificado.")
+        return 0
+
+    print("Hope Solo por participante:")
+    for row in hope_solos:
+        print(f"- {row['name']}: {row['hits']}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

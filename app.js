@@ -2912,13 +2912,9 @@ function toggleLoginState() {
 
 function renderApp() {
   loadImmediateData();
-  console.log("Entrando no renderApp... Resolvendo ranking.");
   const leaderboard = getRankingRows();
-  console.log("Leaderboard resolvido:", leaderboard.length, "linhas. window.backtestData size:", window.backtestData?.ranking?.length);
   renderOverview(leaderboard);
-  console.log("Overview resolvido.");
   renderUserSummary(leaderboard);
-  console.log("User summary resolvido.");
   renderAwards(leaderboard);
   renderRanking(leaderboard);
   renderMatches();
@@ -3016,7 +3012,6 @@ async function loadQuarterFinalsFormsData() {
 loginForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const participant = getParticipantByName(loginUser.value);
-  const loginPassword = document.getElementById("login-password");
   if (!participant && loginUser.value.trim()) {
     loginFeedback.textContent = "Nome não encontrado. Escolha um participante da lista ou entre sem identificar.";
     return;
@@ -3030,7 +3025,6 @@ loginForm.addEventListener("submit", (event) => {
   localStorage.setItem("ucl-bolao-guest", "1");
   loginFeedback.textContent = "";
   loginUser.value = participant?.name || "";
-  if (loginPassword) loginPassword.value = "";
   renderApp();
 });
 
@@ -3039,8 +3033,6 @@ logoutButton.addEventListener("click", () => {
   localStorage.removeItem(storageKeys.session);
   localStorage.removeItem("ucl-bolao-guest");
   loginUser.value = "";
-  const loginPassword = document.getElementById("login-password");
-  if (loginPassword) loginPassword.value = "";
   renderApp();
 });
 
@@ -3050,8 +3042,6 @@ skipLoginButton.addEventListener("click", () => {
   localStorage.setItem("ucl-bolao-guest", "1");
   loginFeedback.textContent = "";
   loginUser.value = "";
-  const loginPassword = document.getElementById("login-password");
-  if (loginPassword) loginPassword.value = "";
   renderApp();
 });
 
@@ -3063,10 +3053,7 @@ tabHistory.addEventListener("click", () => setActiveTab("history"));
 tabRules.addEventListener("click", () => setActiveTab("rules"));
 if (tabSubmitQf) tabSubmitQf.addEventListener("click", () => setActiveTab("submit-qf"));
 
-console.log(">>> APP.JS CARREGADO NO FINAL DO ARQUIVO! ATRIBUINDO LISTENERS...");
-
 window.addEventListener("DOMContentLoaded", () => {
-  console.log(">>> DOM COMPLETAMENTE CARREGADO! INICIANDO APP...");
   loadImmediateData();
   populateLoginSelect();
   renderRules();
