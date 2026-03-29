@@ -51,34 +51,42 @@ Para rodar o bolão temporada após temporada com Google Forms:
 - script de criação dos Forms: [tools/forms/create_bolao_forms.gs](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/forms/create_bolao_forms.gs)
 - guia rápido: [tools/forms/README.md](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/forms/README.md)
 
-## Atualização automática de placares (API-Football)
+## Atualização de placares via API (multi-provider)
 
-O projeto agora possui um workflow dedicado para placares ao vivo:
+O projeto possui um workflow dedicado para sincronizar placares:
 
 - arquivo: `.github/workflows/live-scores-sync.yml`
-- frequência: a cada 20 minutos
-- saída atualizada automaticamente: `api/matches.json` e `api/matches.js`
+- disparo manual (`workflow_dispatch`) e agendado (a cada 20 min)
+- observação: só executa de fato quando `ENABLE_API_SYNC=true`
+- saída atualizada: `api/matches.json` e `api/matches.js`
 
 ### Configuração no GitHub (uma vez)
 
-No repositório, abra `Settings > Secrets and variables > Actions` e crie:
+No repositório, abra `Settings > Secrets and variables > Actions`.
 
-1. Secret obrigatório:
-- `API_FOOTBALL_KEY` = sua chave da API-Football
+1. Variáveis obrigatórias:
+- `ENABLE_API_SYNC` = `true`
+- `LIVE_SCORES_PROVIDER` = `api_football` ou `football_data`
+- `UCL_API_SEASON` = `2025` (Champions 2025/26)
 
-2. Variável recomendada:
-- `UCL_API_SEASON` = `2025` para a edição Champions 2025/26
-
-3. Variáveis opcionais (se quiser sobrescrever padrão):
+2. Se usar `api_football`:
+- Secret: `API_FOOTBALL_KEY`
+- Variáveis opcionais:
 - `API_FOOTBALL_HOST` (padrão: `v3.football.api-sports.io`)
 - `API_FOOTBALL_BASE_URL` (padrão: `https://v3.football.api-sports.io`)
 - `API_FOOTBALL_LEAGUE_ID` (padrão: `2`)
-- `API_FOOTBALL_REQUIRE_NON_EMPTY` (padrão: `true` no workflow, bloqueia sync vazio)
+
+3. Se usar `football_data`:
+- Secret: `FOOTBALL_DATA_API_KEY` (ou reaproveite `API_FOOTBALL_KEY`)
+- Variáveis opcionais:
+- `FOOTBALL_DATA_BASE_URL` (padrão: `https://api.football-data.org/v4`)
+- `FOOTBALL_DATA_COMPETITION_CODE` (padrão: `CL`)
+
+4. Validação de segurança:
+- `API_FOOTBALL_REQUIRE_NON_EMPTY` = `true` (recomendado para bloquear sync vazio)
 
 ### Primeiro disparo manual
 
 1. Abra `Actions` no GitHub.
-2. Selecione `Live Scores Sync (API-Football)`.
+2. Selecione `Live Scores Sync (API Providers)`.
 3. Clique em `Run workflow`.
-
-Depois disso, o job agendado mantém os placares atualizados automaticamente.
