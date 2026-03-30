@@ -591,8 +591,8 @@ select {
 }
 
 .predictions-matrix-table td.hit-trend {
-  background: rgba(0, 212, 255, 0.16) !important;
-  color: #d8f3ff;
+  background: rgba(255, 200, 0, 0.18) !important;
+  color: #ffe6a0;
 }
 
 .predictions-cell-mark {
@@ -608,7 +608,7 @@ select {
 }
 
 .predictions-cell-mark.trend {
-  color: #8cd6ff;
+  color: #ffd166;
 }
 
 .predictions-mobile-board {
@@ -656,9 +656,9 @@ select {
 }
 
 .prediction-mobile-stat.trend {
-  border-color: rgba(117, 209, 255, 0.35);
-  background: rgba(36, 84, 255, 0.16);
-  color: #b6e6ff;
+  border-color: rgba(255, 200, 0, 0.35);
+  background: rgba(255, 200, 0, 0.18);
+  color: #ffe6a0;
 }
 
 .prediction-mobile-stat.neutral {
@@ -710,8 +710,8 @@ select {
 }
 
 .prediction-mobile-row.is-trend {
-  border-color: rgba(117, 209, 255, 0.34);
-  background: rgba(36, 84, 255, 0.14);
+  border-color: rgba(255, 200, 0, 0.36);
+  background: rgba(255, 200, 0, 0.16);
 }
 
 .prediction-mobile-row.is-neutral {
@@ -869,9 +869,9 @@ select {
 }
 
 .result-chip.trend {
-  background: rgba(92, 137, 255, 0.14);
-  border-color: rgba(92, 137, 255, 0.26);
-  color: #d6e4ff;
+  background: rgba(255, 200, 0, 0.16);
+  border-color: rgba(255, 200, 0, 0.3);
+  color: #ffe6a0;
 }
 
 .prediction-highlights {
@@ -1453,16 +1453,16 @@ option {
 }
 
 .superclassic-pick-cell {
-  background: rgba(255, 200, 0, 0.1);
-  color: #ffe6a0;
+  background: rgba(255, 255, 255, 0.05);
+  color: #eaf2ff;
   font-weight: 600;
 }
 
 .superclassic-trend-hit {
-  background: rgba(59, 201, 114, 0.12);
-  color: #d8f3dc;
+  background: rgba(255, 200, 0, 0.18);
+  color: #ffe6a0;
   font-weight: 650;
-  box-shadow: inset 0 0 0 1px rgba(59, 201, 114, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 200, 0, 0.3);
 }
 
 .superclassic-exact-hit {
@@ -1487,7 +1487,18 @@ option {
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #bbf7d0;
+  color: #ffd166;
+}
+
+.superclassic-mobile-board .prediction-mobile-stat.trend {
+  border-color: rgba(255, 200, 0, 0.35);
+  background: rgba(255, 200, 0, 0.18);
+  color: #ffe6a0;
+}
+
+.superclassic-mobile-board .prediction-mobile-row.is-trend {
+  border-color: rgba(255, 200, 0, 0.36);
+  background: rgba(255, 200, 0, 0.16);
 }
 
 .superclassic-official-pill {
