@@ -1627,7 +1627,7 @@ function renderHistory() {
   hallOfFame.innerHTML = `
     <p class="muted">Ordem priorizada por títulos de campeão (desempate: vice, 3º, 4º e Taça Guanabara).</p>
     <div class="table-wrap">
-      <table class="dashboard-table hall-fame-table">
+      <table class="dashboard-table is-wide hall-fame-table">
         <thead>
           <tr>
             <th>#</th>
@@ -1693,25 +1693,6 @@ function renderSuperclassicPanel() {
     `;
     return;
   }
-
-  const matrixStyles = `
-    <style>
-      .predictions-matrix-table { width: 100%; border-collapse: collapse; text-align: center; }
-      .predictions-matrix-table th { background: var(--clr-surface-200); padding: 1rem; border: 1px solid var(--clr-surface-300); font-weight:500; font-size:0.85rem; }
-      .predictions-matrix-table td { padding: 1rem; border: 1px solid var(--clr-surface-300); }
-      .predictions-matrix-table td.participant-name { text-align: left; font-weight: bold; background: var(--clr-surface-100); position: sticky; left: 0; z-index: 2; width: 150px;}
-      .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; border: 1px solid var(--clr-surface-300); }
-      .superclassic-pick-cell { background: rgba(255, 200, 0, 0.1); color: #ffe6a0; font-weight: 600; }
-      .superclassic-trend-hit { background: rgba(59, 201, 114, 0.12); color: #d8f3dc; font-weight: 650; box-shadow: inset 0 0 0 1px rgba(59, 201, 114, 0.2); }
-      .superclassic-exact-hit { background: rgba(59, 201, 114, 0.16); color: #d8f3dc; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(59, 201, 114, 0.28); }
-      .superclassic-exact-mark { display: block; margin-top: 4px; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: #86efac; }
-      .superclassic-trend-mark { display: block; margin-top: 4px; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: #bbf7d0; }
-      .superclassic-official-pill { display: inline-block; background: rgba(59, 201, 114, 0.2); color: #d8f3dc; padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(59, 201, 114, 0.32); }
-      .superclassic-official-pending { display: inline-block; background: rgba(255, 255, 255, 0.08); color: var(--clr-text-muted); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--clr-surface-300); }
-      .superclassic-exact-summary { margin-top: 14px; display: grid; gap: 10px; }
-      .superclassic-official-row td { background: rgba(255, 255, 255, 0.03); font-weight: 600; }
-    </style>
-  `;
 
   const participantOrder = new Map(
     participants.map((participant, index) => [normalizeText(participant.name), index])
@@ -1779,6 +1760,112 @@ function renderSuperclassicPanel() {
     return officialResult === predictedResult ? "trend" : "";
   };
 
+  const renderSuperclassicMobileBoard = ({
+    matchCols,
+    participantNames,
+    picksByParticipant,
+    resolveHitType,
+  }) => `
+    <div class="superclassic-mobile-board">
+      ${matchCols
+        .map((match) => {
+          const picks = participantNames
+            .map((participantName) => {
+              const picksByMatch = picksByParticipant.get(participantName) || new Map();
+              const value = picksByMatch.get(match.key) || "-";
+              if (value === "-") return null;
+              return {
+                participantName,
+                value,
+                hitType: resolveHitType(match, value),
+              };
+            })
+            .filter(Boolean);
+
+          const exactHits = picks.filter((entry) => entry.hitType === "exact");
+          const trendHits = picks.filter((entry) => entry.hitType === "trend");
+          const otherPicks = picks.filter(
+            (entry) => entry.hitType !== "exact" && entry.hitType !== "trend"
+          );
+
+          const renderPickRows = (entries, tone = "") =>
+            entries
+              .map(
+                (entry) => `
+                  <li class="prediction-mobile-row ${tone}">
+                    <span class="prediction-mobile-name">${entry.participantName}</span>
+                    <span class="prediction-mobile-pick">${entry.value}</span>
+                  </li>
+                `
+              )
+              .join("");
+
+          return `
+            <article class="prediction-mobile-match">
+              <header class="prediction-mobile-head">
+                <p class="eyebrow">${match.detail || "Superclássico"}</p>
+                <strong>${match.label || "-"}</strong>
+                <span class="status-pill">Oficial: ${match.official || "pendente"}</span>
+              </header>
+              ${
+                picks.length
+                  ? `
+                    <div class="prediction-mobile-stats">
+                      <span class="prediction-mobile-stat exact">🎯 ${exactHits.length} exato(s)</span>
+                      <span class="prediction-mobile-stat trend">📈 ${trendHits.length} tendência(s)</span>
+                      <span class="prediction-mobile-stat neutral">${otherPicks.length} outro(s)</span>
+                    </div>
+                    ${
+                      !exactHits.length && !trendHits.length
+                        ? `<p class="prediction-mobile-empty-hit muted">Ninguém acertou placar exato ou tendência neste jogo.</p>`
+                        : ""
+                    }
+                    ${
+                      exactHits.length
+                        ? `
+                          <section class="prediction-mobile-group">
+                            <h4 class="prediction-mobile-group-title">Placar exato</h4>
+                            <ul class="prediction-mobile-list">
+                              ${renderPickRows(exactHits, "is-exact")}
+                            </ul>
+                          </section>
+                        `
+                        : ""
+                    }
+                    ${
+                      trendHits.length
+                        ? `
+                          <section class="prediction-mobile-group">
+                            <h4 class="prediction-mobile-group-title">Tendência</h4>
+                            <ul class="prediction-mobile-list">
+                              ${renderPickRows(trendHits, "is-trend")}
+                            </ul>
+                          </section>
+                        `
+                        : ""
+                    }
+                    ${
+                      otherPicks.length
+                        ? `
+                          <details class="prediction-mobile-details">
+                            <summary>Ver outros palpites (${otherPicks.length})</summary>
+                            <ul class="prediction-mobile-list is-secondary">
+                              ${renderPickRows(otherPicks, "is-neutral")}
+                            </ul>
+                          </details>
+                        `
+                        : ""
+                    }
+                  `
+                  : `<ul class="prediction-mobile-list"><li class="prediction-mobile-row"><span class="muted">Sem palpites neste jogo.</span></li></ul>`
+              }
+            </article>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+
   const renderLeagueSuperclassicTable = (phaseFixtures) => {
     if (!phaseFixtures.length) return "";
 
@@ -1786,7 +1873,7 @@ function renderSuperclassicPanel() {
     const matchCols = phaseFixtures.map((fixture) => ({
       key: fixture.key,
       label: fixture.title,
-      detail: fixture.phaseDetail,
+      detail: fixture.phaseDetail || "1ª fase",
       official: fixture.official,
       picks: mergeSuperclassicPicks(
         legacyPicksByMatch.get(getSuperclassicFixtureKey(fixture.title)) || [],
@@ -1810,13 +1897,19 @@ function renderSuperclassicPanel() {
       .filter((name) => !knownParticipantsNormalized.has(normalizeText(name)))
       .sort(sortParticipants);
     const participantNames = [...knownParticipants, ...extraParticipants];
+    const mobileBoardMarkup = renderSuperclassicMobileBoard({
+      matchCols,
+      participantNames,
+      picksByParticipant,
+      resolveHitType: resolveLeagueHitType,
+    });
 
     return `
       <article class="rules-card">
         <h3>Primeira fase: palpites e resultados dos superclássicos</h3>
         <p class="muted">${matchCols.length} jogo(s) em tabela única.</p>
-        <div class="table-wrapper">
-          <table class="predictions-matrix-table">
+        <div class="table-wrapper superclassic-table-desktop">
+          <table class="predictions-matrix-table superclassic-matrix-table">
             <thead>
               <tr>
                 <th class="participant-name">Participante</th>
@@ -1824,8 +1917,8 @@ function renderSuperclassicPanel() {
                   .map(
                     (match, index) => `
                       <th>
-                        <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">Jogo ${index + 1}</div>
-                        <div style="margin-bottom:8px;">${match.label}</div>
+                        <div class="predictions-column-subtitle">Jogo ${index + 1}</div>
+                        <div class="predictions-column-title">${match.label}</div>
                         ${
                           match.official
                             ? `<div class="superclassic-official-pill">Oficial: ${match.official}</div>`
@@ -1856,10 +1949,10 @@ function renderSuperclassicPanel() {
                   return `
                     <tr>
                       <td class="participant-name">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                          <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${participantName.charAt(0)}</div>
+                        <span class="predictions-participant-cell">
+                          <span class="predictions-participant-avatar">${participantName.charAt(0)}</span>
                           ${participantName}
-                        </div>
+                        </span>
                       </td>
                       ${matchCols
                         .map((match) => {
@@ -1894,6 +1987,7 @@ function renderSuperclassicPanel() {
             </tbody>
           </table>
         </div>
+        ${mobileBoardMarkup}
       </article>
     `;
   };
@@ -1901,7 +1995,7 @@ function renderSuperclassicPanel() {
   const renderSuperclassicMatrix = (phaseFixtures) => {
     const matchCols = phaseFixtures.map((fixture) => ({
       label: fixture.title,
-      detail: fixture.phaseDetail,
+      detail: fixture.phaseDetail || (phaseRules[fixture.phase]?.label || fixture.phase),
       key: fixture.key,
       official: fixture.official,
       picks: fixture.picks || [],
@@ -1924,6 +2018,12 @@ function renderSuperclassicPanel() {
       .sort(sortParticipants);
     const participantNames = [...knownParticipants, ...extraParticipants];
     const officialByMatch = new Map(matchCols.map((match) => [match.key, match.official]));
+    const mobileBoardMarkup = renderSuperclassicMobileBoard({
+      matchCols,
+      participantNames,
+      picksByParticipant,
+      resolveHitType: (match, pick) => resolveScoreHitType(match.official, pick),
+    });
 
     const exactSummaryMarkup = `
       <div class="superclassic-exact-summary">
@@ -1982,8 +2082,8 @@ function renderSuperclassicPanel() {
     }
 
     return `
-      <div class="table-wrapper">
-        <table class="predictions-matrix-table">
+      <div class="table-wrapper superclassic-table-desktop">
+        <table class="predictions-matrix-table superclassic-matrix-table">
           <thead>
             <tr>
               <th class="participant-name">Participante</th>
@@ -1991,8 +2091,8 @@ function renderSuperclassicPanel() {
                 .map(
                   (match) => `
                     <th>
-                      <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">${match.detail}</div>
-                      <div style="margin-bottom:8px;">${match.label}</div>
+                      <div class="predictions-column-subtitle">${match.detail}</div>
+                      <div class="predictions-column-title">${match.label}</div>
                       ${
                         officialByMatch.get(match.key)
                           ? `<div class="superclassic-official-pill">Oficial: ${officialByMatch.get(match.key)}</div>`
@@ -2011,10 +2111,10 @@ function renderSuperclassicPanel() {
                 return `
                   <tr>
                     <td class="participant-name">
-                      <div style="display:flex; align-items:center; gap:8px;">
-                        <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${participantName.charAt(0)}</div>
+                      <span class="predictions-participant-cell">
+                        <span class="predictions-participant-avatar">${participantName.charAt(0)}</span>
                         ${participantName}
-                      </div>
+                      </span>
                     </td>
                     ${matchCols
                       .map((match) => {
@@ -2049,6 +2149,7 @@ function renderSuperclassicPanel() {
           </tbody>
         </table>
       </div>
+      ${mobileBoardMarkup}
       ${exactSummaryMarkup}
     `;
   };
@@ -2168,7 +2269,7 @@ function renderSuperclassicPanel() {
     )
     .join("");
 
-  superclassicPanel.innerHTML = `${matrixStyles}${leagueTableMarkup}${overviewMarkup}${blockMarkup}`;
+  superclassicPanel.innerHTML = `${leagueTableMarkup}${overviewMarkup}${blockMarkup}`;
 
   const leagueForm = superclassicPanel.querySelector("#league-superclassic-form");
   const leagueFeedback = superclassicPanel.querySelector("#league-superclassic-feedback");

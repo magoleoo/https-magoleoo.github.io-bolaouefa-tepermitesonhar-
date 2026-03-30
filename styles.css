@@ -18,6 +18,11 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -491,6 +496,7 @@ select {
   border-radius: 12px;
   border: 1px solid var(--line);
   max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .predictions-matrix-table {
@@ -943,6 +949,10 @@ table {
 
 .dashboard-table {
   background: rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-table.is-wide {
+  min-width: 980px;
 }
 
 .dashboard-table th {
@@ -1403,6 +1413,19 @@ option {
   white-space: nowrap;
 }
 
+.superclassic-matrix-table {
+  min-width: 980px;
+}
+
+.superclassic-table-desktop {
+  display: block;
+}
+
+.superclassic-mobile-board {
+  display: none;
+  gap: 12px;
+}
+
 .hall-champion-pill {
   display: inline-flex;
   align-items: center;
@@ -1427,6 +1450,73 @@ option {
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+}
+
+.superclassic-pick-cell {
+  background: rgba(255, 200, 0, 0.1);
+  color: #ffe6a0;
+  font-weight: 600;
+}
+
+.superclassic-trend-hit {
+  background: rgba(59, 201, 114, 0.12);
+  color: #d8f3dc;
+  font-weight: 650;
+  box-shadow: inset 0 0 0 1px rgba(59, 201, 114, 0.2);
+}
+
+.superclassic-exact-hit {
+  background: rgba(59, 201, 114, 0.16);
+  color: #d8f3dc;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(59, 201, 114, 0.28);
+}
+
+.superclassic-exact-mark {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #86efac;
+}
+
+.superclassic-trend-mark {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #bbf7d0;
+}
+
+.superclassic-official-pill {
+  display: inline-block;
+  background: rgba(59, 201, 114, 0.2);
+  color: #d8f3dc;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 201, 114, 0.32);
+}
+
+.superclassic-official-pending {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.superclassic-exact-summary {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.superclassic-official-row td {
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 600;
 }
 
 .superclassic-manual-grid {
@@ -1478,7 +1568,7 @@ option {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 980px), (hover: none) and (pointer: coarse) {
   .app-shell {
     padding: 12px;
   }
@@ -1651,6 +1741,14 @@ option {
   }
 
   .predictions-mobile-board {
+    display: grid;
+  }
+
+  .superclassic-table-desktop {
+    display: none;
+  }
+
+  .superclassic-mobile-board {
     display: grid;
   }
 }
