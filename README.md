@@ -75,3 +75,35 @@ No repositório, abra `Settings > Secrets and variables > Actions`.
 1. Abra `Actions` no GitHub.
 2. Selecione `Bolao Auto-Sync`.
 3. Clique em `Run workflow`.
+
+## Auditoria Funcional Guiada (UX em produção)
+
+O projeto agora possui um script de auditoria clique a clique:
+
+- script: [tools/qa_functional_audit.py](/Users/leopicca/Downloads/06_Projetos_e_Criacao/champions-bolao/tools/qa_functional_audit.py)
+- saída JSON: `qa-functional-report.json`
+- saída Markdown: `qa-functional-report.md`
+
+### Instalação (uma vez)
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
+```
+
+### Rodar auditoria local (arquivo index atual)
+
+```bash
+python3 tools/qa_functional_audit.py
+```
+
+### Rodar auditoria no site publicado
+
+```bash
+python3 tools/qa_functional_audit.py --url "https://magoleoo.github.io/https-magoleoo.github.io-bolaouefa-tepermitesonhar/"
+```
+
+### Resultado
+
+- Exit `0`: auditoria crítica passou (desktop + mobile, sem erro de runtime/console).
+- Exit `1`: houve falha crítica em algum check.

@@ -4,3 +4,5 @@ backend/data/*.db
 __pycache__/
 *.pyc
 .DS_Store
+qa-functional-report.json
+qa-functional-report.md
