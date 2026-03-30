@@ -2736,6 +2736,392 @@ function renderPredictionsGallery() {
 
 let activePredictionsPhase = "LEAGUE";
 let activePredictionsFilter = "Matchday 1";
+let latestPredictionExportPayload = {
+  title: "",
+  sections: [],
+};
+
+function getMatchdayNumber(value) {
+  const match = String(value || "").match(/(\d+)/);
+  return match ? Number(match[1]) : null;
+}
+
+function formatRoundLabel(value) {
+  const number = getMatchdayNumber(value);
+  return number ? `Rodada ${number}` : String(value || "Jogo oficial").replace(/machtday|matchday/gi, "Rodada");
+}
+
+function getLegToken(value) {
+  const normalized = normalizeText(String(value || ""));
+  if (normalized.includes("ida")) return "IDA";
+  if (normalized.includes("volta")) return "VOLTA";
+  return "";
+}
+
+function resolvePredictionHitType(fixture, pickValue) {
+  const pickText = String(pickValue || "").trim();
+  if (!pickText || pickText === "-") return "";
+
+  const teams = resolveFixtureTeams(fixture);
+  const officialScore = parseScoreFromText(fixture?.official);
+  const predictedScore = parseScoreFromText(pickText);
+
+  if (
+    officialScore &&
+    predictedScore &&
+    officialScore.home === predictedScore.home &&
+    officialScore.away === predictedScore.away
+  ) {
+    return "exact";
+  }
+
+  let officialTrend = null;
+  if (officialScore) {
+    officialTrend = matchResultFromScores(officialScore.home, officialScore.away);
+  } else if (teams) {
+    officialTrend = resolveTrendTokenFromPick(
+      fixture?.official,
+      teams.homeTeam,
+      teams.awayTeam
+    );
+  }
+
+  let predictedTrend = null;
+  if (predictedScore) {
+    predictedTrend = matchResultFromScores(predictedScore.home, predictedScore.away);
+  } else if (teams) {
+    predictedTrend = resolveTrendTokenFromPick(
+      pickText,
+      teams.homeTeam,
+      teams.awayTeam
+    );
+  }
+
+  if (officialTrend && predictedTrend && officialTrend === predictedTrend) {
+    return "trend";
+  }
+
+  return "";
+}
+
+function splitPredictionFixturesByLeg(fixtures) {
+  let idaFixtures = fixtures.filter((fixture) => getLegToken(fixture?.leg) === "IDA");
+  let voltaFixtures = fixtures.filter((fixture) => getLegToken(fixture?.leg) === "VOLTA");
+
+  if (!idaFixtures.length && !voltaFixtures.length && fixtures.length > 1) {
+    const midpoint = Math.ceil(fixtures.length / 2);
+    idaFixtures = fixtures.slice(0, midpoint);
+    voltaFixtures = fixtures.slice(midpoint);
+  }
+
+  return { idaFixtures, voltaFixtures };
+}
+
+function buildPredictionMatrixSection(fixtures, sectionTitle = "") {
+  const knownParticipants = participants.map((participant) => participant.name);
+  const knownParticipantsKeys = new Set(knownParticipants.map((name) => normalizeText(name)));
+  const extraParticipantsByKey = new Map();
+
+  const columns = fixtures.map((fixture) => {
+    const picksByParticipant = new Map();
+    (fixture?.picks || []).forEach((pick) => {
+      const participantName = String(pick?.participant || "").trim();
+      if (!participantName) return;
+      const participantKey = normalizeText(participantName);
+      const pickValue = String(pick?.pick || "").trim();
+      picksByParticipant.set(participantKey, pickValue || "-");
+      if (!knownParticipantsKeys.has(participantKey) && !extraParticipantsByKey.has(participantKey)) {
+        extraParticipantsByKey.set(participantKey, participantName);
+      }
+    });
+
+    const legToken = getLegToken(fixture?.leg);
+    const subtitle = legToken || formatRoundLabel(fixture?.matchday || "");
+    return {
+      fixture,
+      subtitle,
+      label: String(fixture?.label || "").trim(),
+      official: String(fixture?.official || "-").trim() || "-",
+      picksByParticipant,
+    };
+  });
+
+  const extraParticipants = [...extraParticipantsByKey.values()].sort((a, b) =>
+    a.localeCompare(b, "pt-BR")
+  );
+  const allParticipants = [...knownParticipants, ...extraParticipants];
+
+  const rows = allParticipants.map((participantName) => {
+    const participantKey = normalizeText(participantName);
+    const cells = columns.map((column) => {
+      const value = column.picksByParticipant.get(participantKey) || "-";
+      const hitType = value !== "-" ? resolvePredictionHitType(column.fixture, value) : "";
+      return {
+        value,
+        hitType,
+      };
+    });
+
+    return {
+      participantName,
+      cells,
+    };
+  });
+
+  return {
+    sectionTitle,
+    columns,
+    rows,
+  };
+}
+
+function sanitizeDownloadFileName(value) {
+  const safe = normalizeText(String(value || "palpites"))
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80);
+  return safe || "palpites";
+}
+
+function drawWrappedCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+  if (!words.length) return 0;
+
+  const lines = [];
+  let current = words[0];
+  for (let index = 1; index < words.length; index += 1) {
+    const candidate = `${current} ${words[index]}`;
+    if (ctx.measureText(candidate).width <= maxWidth) {
+      current = candidate;
+    } else {
+      lines.push(current);
+      current = words[index];
+      if (lines.length >= maxLines - 1) break;
+    }
+  }
+  lines.push(current);
+
+  let rendered = lines.slice(0, maxLines);
+  if (lines.length > maxLines) {
+    const last = rendered[maxLines - 1];
+    rendered[maxLines - 1] = `${last.slice(0, Math.max(0, last.length - 1))}…`;
+  }
+
+  rendered.forEach((line, lineIndex) => {
+    ctx.fillText(line, x, y + lineIndex * lineHeight);
+  });
+  return rendered.length;
+}
+
+function buildPredictionExportCanvas(payload) {
+  const sections = Array.isArray(payload?.sections) ? payload.sections : [];
+  if (!sections.length) return null;
+
+  const padding = 24;
+  const titleHeight = 56;
+  const firstColWidth = 200;
+  const colWidth = 160;
+  const headerHeight = 116;
+  const rowHeight = 34;
+  const sectionTitleHeight = 30;
+  const sectionGap = 20;
+
+  let contentWidth = 0;
+  let totalHeight = padding + titleHeight;
+
+  sections.forEach((section) => {
+    const tableWidth = firstColWidth + section.columns.length * colWidth;
+    contentWidth = Math.max(contentWidth, tableWidth);
+    totalHeight += sectionTitleHeight + headerHeight + section.rows.length * rowHeight + sectionGap;
+  });
+
+  const width = Math.max(900, contentWidth + padding * 2);
+  const height = totalHeight + padding;
+  const scale = 2;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width * scale;
+  canvas.height = height * scale;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.scale(scale, scale);
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, "#030d2d");
+  gradient.addColorStop(1, "#000a24");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = "#eaf2ff";
+  ctx.font = '700 24px "Space Grotesk", sans-serif';
+  ctx.fillText(payload.title || "Palpites do bolão", padding, padding + 24);
+
+  ctx.fillStyle = "#9fb3cf";
+  ctx.font = '500 13px "Space Grotesk", sans-serif';
+  const generatedAt = new Date().toLocaleString("pt-BR");
+  ctx.fillText(`Gerado em ${generatedAt}`, padding, padding + 44);
+
+  let y = padding + titleHeight;
+  sections.forEach((section) => {
+    ctx.fillStyle = "#cfe2ff";
+    ctx.font = '700 17px "Space Grotesk", sans-serif';
+    const sectionName = section.sectionTitle || "Tabela";
+    ctx.fillText(sectionName, padding, y + 20);
+    y += sectionTitleHeight;
+
+    ctx.fillStyle = "rgba(255,255,255,0.03)";
+    ctx.fillRect(padding, y, contentWidth, headerHeight);
+
+    ctx.fillStyle = "rgba(255,255,255,0.06)";
+    ctx.fillRect(padding, y, firstColWidth, headerHeight);
+
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padding, y, contentWidth, headerHeight);
+
+    ctx.fillStyle = "#9fb3cf";
+    ctx.font = '700 12px "Space Grotesk", sans-serif';
+    ctx.fillText("Participante", padding + 12, y + 22);
+
+    section.columns.forEach((column, columnIndex) => {
+      const columnX = padding + firstColWidth + columnIndex * colWidth;
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.strokeRect(columnX, y, colWidth, headerHeight);
+
+      ctx.fillStyle = "#9fb3cf";
+      ctx.font = '700 10px "Space Grotesk", sans-serif';
+      ctx.fillText(column.subtitle || "Jogo", columnX + 10, y + 18);
+
+      ctx.fillStyle = "#f3f8ff";
+      ctx.font = '600 12px "Space Grotesk", sans-serif';
+      drawWrappedCanvasText(ctx, column.label || "-", columnX + 10, y + 38, colWidth - 20, 14, 3);
+
+      ctx.fillStyle = "#8de5ff";
+      ctx.font = '700 11px "Space Grotesk", sans-serif';
+      drawWrappedCanvasText(
+        ctx,
+        `Oficial: ${column.official || "-"}`,
+        columnX + 10,
+        y + 96,
+        colWidth - 20,
+        13,
+        1
+      );
+    });
+
+    y += headerHeight;
+
+    section.rows.forEach((row, rowIndex) => {
+      const rowY = y + rowIndex * rowHeight;
+      const rowBase = rowIndex % 2 ? "rgba(255,255,255,0.015)" : "rgba(255,255,255,0.005)";
+      ctx.fillStyle = rowBase;
+      ctx.fillRect(padding, rowY, contentWidth, rowHeight);
+
+      ctx.fillStyle = "rgba(6,18,48,0.92)";
+      ctx.fillRect(padding, rowY, firstColWidth, rowHeight);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.strokeRect(padding, rowY, firstColWidth, rowHeight);
+
+      ctx.fillStyle = "#f0f5ff";
+      ctx.font = '600 12px "Space Grotesk", sans-serif';
+      const participantName = String(row.participantName || "-");
+      drawWrappedCanvasText(ctx, participantName, padding + 10, rowY + 20, firstColWidth - 20, 13, 2);
+
+      row.cells.forEach((cell, cellIndex) => {
+        const cellX = padding + firstColWidth + cellIndex * colWidth;
+        if (cell.hitType === "exact") {
+          ctx.fillStyle = "rgba(0,255,135,0.2)";
+          ctx.fillRect(cellX, rowY, colWidth, rowHeight);
+        } else if (cell.hitType === "trend") {
+          ctx.fillStyle = "rgba(0,212,255,0.16)";
+          ctx.fillRect(cellX, rowY, colWidth, rowHeight);
+        }
+
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.strokeRect(cellX, rowY, colWidth, rowHeight);
+        ctx.fillStyle = "#f3f8ff";
+        ctx.font = '600 12px "Space Grotesk", sans-serif';
+        ctx.fillText(String(cell.value || "-"), cellX + 12, rowY + 21);
+      });
+    });
+
+    y += section.rows.length * rowHeight + sectionGap;
+  });
+
+  return canvas;
+}
+
+function setPredictionsExportFeedback(message, isSuccess = false) {
+  const feedback = document.querySelector("#predictions-export-feedback");
+  if (!feedback) return;
+  feedback.textContent = String(message || "");
+  feedback.classList.toggle("success", Boolean(isSuccess));
+}
+
+function exportPredictionsAsImage() {
+  const canvas = buildPredictionExportCanvas(latestPredictionExportPayload);
+  if (!canvas) {
+    setPredictionsExportFeedback("Nada para exportar nesta visão.");
+    return;
+  }
+
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = `${sanitizeDownloadFileName(latestPredictionExportPayload.title)}.png`;
+  link.click();
+  setPredictionsExportFeedback("Imagem exportada com sucesso.", true);
+}
+
+function exportPredictionsAsPdf() {
+  const canvas = buildPredictionExportCanvas(latestPredictionExportPayload);
+  if (!canvas) {
+    setPredictionsExportFeedback("Nada para exportar nesta visão.");
+    return;
+  }
+
+  const imageUrl = canvas.toDataURL("image/png");
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    setPredictionsExportFeedback("Libere pop-up do navegador para exportar em PDF.");
+    return;
+  }
+
+  const safeTitle = String(latestPredictionExportPayload.title || "Palpites");
+  printWindow.document.write(`
+    <!doctype html>
+    <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${safeTitle}</title>
+        <style>
+          body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #fff; color: #111; }
+          h1 { margin: 0 0 12px; font-size: 18px; }
+          p { margin: 0 0 16px; font-size: 12px; color: #444; }
+          img { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; }
+          @media print {
+            body { padding: 0; }
+            h1, p { margin-left: 10mm; margin-right: 10mm; }
+            img { border: 0; border-radius: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${safeTitle}</h1>
+        <p>Selecione "Salvar como PDF" na janela de impressão para baixar o arquivo.</p>
+        <img src="${imageUrl}" alt="Tabela de palpites" />
+        <script>
+          window.addEventListener("load", function () {
+            setTimeout(function () { window.print(); }, 250);
+          });
+        </script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  setPredictionsExportFeedback("PDF aberto na janela de impressão.", true);
+}
 
 function renderPredictionConsultation() {
   const container = document.getElementById("predictions-consultation");
@@ -2752,20 +3138,36 @@ function renderPredictionConsultation() {
 
   const leagueRounds = Array.from({length: 8}, (_, i) => `Matchday ${i+1}`);
 
-  let phaseTabsHTML = `<div class="subtabs" style="margin-bottom:1rem; border-bottom:1px solid var(--clr-surface-200); padding-bottom:0.5rem; display:flex; gap:1rem; overflow-x:auto;">`;
+  let phaseTabsHTML = `<div class="predictions-subtabs predictions-subtabs--framed">`;
   validPhases.forEach(ph => {
-    const act = ph.id === activePredictionsPhase ? 'style="color:var(--clr-primary-400); font-weight:bold; border-bottom:2px solid var(--clr-primary-400); padding-bottom:8px;"' : 'style="color:var(--clr-text-muted); cursor:pointer;"';
-    phaseTabsHTML += `<div onclick="window.setPredictPhase('${ph.id}')" ${act}>${ph.label}</div>`;
+    const isActive = ph.id === activePredictionsPhase;
+    phaseTabsHTML += `
+      <button
+        type="button"
+        class="predictions-tab-button ${isActive ? "is-active" : ""}"
+        onclick="window.setPredictPhase('${ph.id}')"
+      >
+        ${ph.label}
+      </button>
+    `;
   });
   phaseTabsHTML += `</div>`;
 
   let secondaryTabsHTML = '';
   if (activePredictionsPhase === "LEAGUE") {
-    secondaryTabsHTML = `<div class="subtabs" style="background:var(--clr-surface-200); border-radius:8px; padding:0.5rem; margin-bottom:1rem; display:flex; gap:1rem; overflow-x:auto;">`;
+    secondaryTabsHTML = `<div class="predictions-subtabs">`;
     leagueRounds.forEach(r => {
       const badgeText = r.replace("Matchday", "Rodada");
-      const act = r === activePredictionsFilter ? 'style="background:var(--clr-primary-500); color:white; padding:4px 12px; border-radius:4px; cursor:pointer;"' : 'style="color:var(--clr-text-muted); padding:4px 12px; cursor:pointer;"';
-      secondaryTabsHTML += `<div onclick="window.setPredictFilter('${r}')" ${act}>${badgeText}</div>`;
+      const isActive = r === activePredictionsFilter;
+      secondaryTabsHTML += `
+        <button
+          type="button"
+          class="predictions-tab-button ${isActive ? "is-active" : ""}"
+          onclick="window.setPredictFilter('${r}')"
+        >
+          ${badgeText}
+        </button>
+      `;
     });
     secondaryTabsHTML += `</div>`;
   }
@@ -2773,110 +3175,217 @@ function renderPredictionConsultation() {
   let srcFixtures = [];
   if (activePredictionsPhase === "LEAGUE") {
     const rawMatches = backtestData?.phases?.[activePredictionsPhase]?.fixtures || [];
-    srcFixtures = rawMatches.filter(f => f.matchday === activePredictionsFilter.replace("Matchday", "Machtday"));
+    const targetRound = getMatchdayNumber(activePredictionsFilter);
+    srcFixtures = rawMatches.filter((fixture) => {
+      const matchdayLabel = normalizeText(String(fixture?.matchday || ""));
+      const isRoundFixture =
+        matchdayLabel.includes("matchday") || matchdayLabel.includes("machtday");
+      if (!isRoundFixture) return false;
+      return getMatchdayNumber(fixture?.matchday) === targetRound;
+    });
   } else {
     srcFixtures = backtestData?.phases?.[activePredictionsPhase]?.fixtures || [];
   }
 
+  const activePhaseMeta = validPhases.find((phase) => phase.id === activePredictionsPhase);
+  const exportTitle = activePredictionsPhase === "LEAGUE"
+    ? `Palpites ${activePhaseMeta?.label || "Primeira Fase"} - ${activePredictionsFilter.replace("Matchday", "Rodada")}`
+    : `Palpites ${activePhaseMeta?.label || activePredictionsPhase}`;
+
+  let matrixSections = [];
+  const phasesWithTwoLegs = ["PLAYOFF", "ROUND_OF_16"];
+  if (srcFixtures.length) {
+    if (phasesWithTwoLegs.includes(activePredictionsPhase)) {
+      const { idaFixtures, voltaFixtures } = splitPredictionFixturesByLeg(srcFixtures);
+      if (idaFixtures.length) matrixSections.push(buildPredictionMatrixSection(idaFixtures, "Jogos de Ida"));
+      if (voltaFixtures.length) matrixSections.push(buildPredictionMatrixSection(voltaFixtures, "Jogos de Volta"));
+      if (!matrixSections.length) matrixSections.push(buildPredictionMatrixSection(srcFixtures));
+    } else {
+      matrixSections = [buildPredictionMatrixSection(srcFixtures)];
+    }
+  }
+
+  latestPredictionExportPayload = {
+    title: exportTitle,
+    sections: matrixSections,
+  };
+
+  const exportActionsHTML = `
+    <div class="predictions-export-actions">
+      <button
+        type="button"
+        id="predictions-export-image"
+        class="ghost-button"
+        ${matrixSections.length ? "" : "disabled"}
+      >
+        Exportar imagem (PNG)
+      </button>
+      <button
+        type="button"
+        id="predictions-export-pdf"
+        class="ghost-button"
+        ${matrixSections.length ? "" : "disabled"}
+      >
+        Exportar PDF
+      </button>
+    </div>
+    <p class="predictions-export-hint muted">No PDF, o app abre a tela de impressão para você salvar como PDF.</p>
+    <p id="predictions-export-feedback" class="feedback"></p>
+  `;
+
   if (!srcFixtures.length) {
-    container.innerHTML = phaseTabsHTML + secondaryTabsHTML + `<div class="empty-state">Nenhum palpite registrado nesta etapa ainda.</div>`;
+    container.innerHTML =
+      phaseTabsHTML +
+      secondaryTabsHTML +
+      exportActionsHTML +
+      `<div class="empty-state">Nenhum palpite registrado nesta etapa ainda.</div>`;
+    const imageButton = container.querySelector("#predictions-export-image");
+    const pdfButton = container.querySelector("#predictions-export-pdf");
+    if (imageButton) imageButton.addEventListener("click", exportPredictionsAsImage);
+    if (pdfButton) pdfButton.addEventListener("click", exportPredictionsAsPdf);
     return;
   }
 
-  const tableStyles = `
-    <style>
-      .predictions-matrix-table { width: 100%; border-collapse: collapse; text-align: center; }
-      .predictions-matrix-table th { background: var(--clr-surface-200); padding: 1rem; border: 1px solid var(--clr-surface-300); font-weight:500; font-size:0.85rem; }
-      .predictions-matrix-table td { padding: 1rem; border: 1px solid var(--clr-surface-300); }
-      .predictions-matrix-table td.participant-name { text-align: left; font-weight: bold; background: var(--clr-surface-100); position: sticky; left: 0; z-index: 2; width: 150px;}
-      .hit-cell { background: rgba(34,197,94,0.15) !important; color: #4ade80 !important; font-weight: bold; }
-      .miss-cell { background: var(--clr-surface-100); color: var(--clr-text-muted); }
-      .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; border: 1px solid var(--clr-surface-300); }
-      .predictions-section-title { margin: 1.5rem 0 0.75rem; color: var(--clr-text-100); font-size: 1rem; letter-spacing: 0.03em; }
-      .predictions-section-title:first-of-type { margin-top: 0; }
-    </style>
-  `;
-
-  const renderMatrixTable = (matchCols, sectionTitle = "") => {
-    if (!matchCols.length) {
+  const renderMatrixSection = (section) => {
+    if (!section.columns.length) {
       return "";
     }
 
-    const participantsSet = new Set();
-    matchCols.forEach(m => {
-      (m.picks || []).forEach(p => participantsSet.add(p.participant));
-    });
-    const participants = Array.from(participantsSet).sort();
-
     return `
-      ${sectionTitle ? `<h3 class="predictions-section-title">${sectionTitle}</h3>` : ""}
-      <div class="table-wrapper">
-        <table class="predictions-matrix-table">
-          <thead>
-            <tr>
-              <th class="participant-name">Participante</th>
-              ${matchCols.map(m => `
-                <th>
-                  <div style="font-size:0.7rem; color:var(--clr-text-muted); margin-bottom:4px;">${m.matchday && m.matchday.includes("Machtday") ? m.matchday.replace("Machtday", "Rodada") : "Jogo Oficial"}</div>
-                  <div style="margin-bottom:8px;">${m.label}</div>
-                  <div style="display:inline-block; background:var(--clr-surface-400); color:white; padding:2px 8px; border-radius:12px;">${m.official || "-"}</div>
-                </th>
-              `).join("")}
-            </tr>
-          </thead>
-          <tbody>
-            ${participants.map(part => `
+      <section class="predictions-matrix-section">
+        ${section.sectionTitle ? `<h3 class="predictions-section-title">${section.sectionTitle}</h3>` : ""}
+
+        <div class="table-wrapper predictions-table-desktop">
+          <table class="predictions-matrix-table">
+            <thead>
               <tr>
-                <td class="participant-name">
-                   <div style="display:flex; align-items:center; gap:8px;">
-                     <div style="width:24px; height:24px; border-radius:50%; background:var(--clr-surface-300); display:flex; align-items:center; justify-content:center; font-size:0.7rem;">${part.charAt(0)}</div>
-                     ${part}
-                   </div>
-                </td>
-                ${matchCols.map(m => {
-                  const pickObj = (m.picks || []).find(p => p.participant === part);
-                  const pickStr = pickObj ? pickObj.pick : "-";
-                  let isHit = false;
-                  if (m.official && m.official !== "-") {
-                    if (pickStr.toLowerCase() === m.official.toLowerCase()) isHit = true;
-                  }
-                  const cellClass = isHit ? "hit-cell" : "miss-cell";
-                  return `<td class="${pickStr === "-" ? "" : cellClass}">${pickStr}</td>`;
-                }).join("")}
+                <th class="participant-name">Participante</th>
+                ${section.columns
+                  .map(
+                    (column) => `
+                      <th>
+                        <div class="predictions-column-subtitle">${column.subtitle || "Jogo oficial"}</div>
+                        <div class="predictions-column-title">${column.label || "-"}</div>
+                        <div class="predictions-column-official">Oficial: ${column.official || "-"}</div>
+                      </th>
+                    `
+                  )
+                  .join("")}
               </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              ${section.rows
+                .map(
+                  (row) => `
+                    <tr>
+                      <td class="participant-name">
+                        <span class="predictions-participant-cell">
+                          <span class="predictions-participant-avatar">${row.participantName.charAt(0)}</span>
+                          ${row.participantName}
+                        </span>
+                      </td>
+                      ${row.cells
+                        .map((cell) => {
+                          const hitClass = cell.hitType === "exact"
+                            ? "hit-exact"
+                            : cell.hitType === "trend"
+                              ? "hit-trend"
+                              : "";
+                          const marker = cell.hitType === "exact"
+                            ? `<span class="predictions-cell-mark exact">Placar exato</span>`
+                            : cell.hitType === "trend"
+                              ? `<span class="predictions-cell-mark trend">Tendência</span>`
+                              : "";
+                          return `
+                            <td class="${hitClass}">
+                              ${cell.value}
+                              ${marker}
+                            </td>
+                          `;
+                        })
+                        .join("")}
+                    </tr>
+                  `
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="predictions-mobile-board">
+          ${section.columns
+            .map((column, columnIndex) => {
+              const picks = section.rows
+                .map((row) => ({
+                  participantName: row.participantName,
+                  value: row.cells[columnIndex]?.value || "-",
+                  hitType: row.cells[columnIndex]?.hitType || "",
+                }))
+                .filter((entry) => entry.value !== "-");
+
+              return `
+                <article class="prediction-mobile-match">
+                  <header class="prediction-mobile-head">
+                    <p class="eyebrow">${column.subtitle || "Jogo oficial"}</p>
+                    <strong>${column.label || "-"}</strong>
+                    <span class="status-pill">Oficial: ${column.official || "-"}</span>
+                  </header>
+                  <ul class="prediction-mobile-list">
+                    ${
+                      picks.length
+                        ? picks
+                            .map((entry) => {
+                              const rowClass = entry.hitType === "exact"
+                                ? "is-exact"
+                                : entry.hitType === "trend"
+                                  ? "is-trend"
+                                  : "";
+                              const chip = entry.hitType === "exact"
+                                ? `<span class="prediction-mobile-chip exact">Placar exato</span>`
+                                : entry.hitType === "trend"
+                                  ? `<span class="prediction-mobile-chip trend">Tendência</span>`
+                                  : "";
+                              return `
+                                <li class="prediction-mobile-row ${rowClass}">
+                                  <span class="prediction-mobile-name">${entry.participantName}</span>
+                                  <span class="prediction-mobile-pick">${entry.value}</span>
+                                  ${chip}
+                                </li>
+                              `;
+                            })
+                            .join("")
+                        : `<li class="prediction-mobile-row"><span class="muted">Sem palpites neste jogo.</span></li>`
+                    }
+                  </ul>
+                </article>
+              `;
+            })
+            .join("")}
+        </div>
+      </section>
     `;
   };
 
-  const phasesWithTwoLegs = ["PLAYOFF", "ROUND_OF_16"];
-  let tablesMarkup = "";
-
-  if (phasesWithTwoLegs.includes(activePredictionsPhase)) {
-    let idaFixtures = srcFixtures.filter((fixture) => (fixture.leg || "").toUpperCase() === "IDA");
-    let voltaFixtures = srcFixtures.filter((fixture) => (fixture.leg || "").toUpperCase() === "VOLTA");
-
-    // Fallback para bases antigas sem o campo "leg".
-    if (!idaFixtures.length && !voltaFixtures.length && srcFixtures.length > 1) {
-      const midpoint = Math.ceil(srcFixtures.length / 2);
-      idaFixtures = srcFixtures.slice(0, midpoint);
-      voltaFixtures = srcFixtures.slice(midpoint);
-    }
-
-    tablesMarkup += renderMatrixTable(idaFixtures, "Jogos de Ida");
-    tablesMarkup += renderMatrixTable(voltaFixtures, "Jogos de Volta");
-  } else {
-    tablesMarkup = renderMatrixTable(srcFixtures);
-  }
+  const tablesMarkup = matrixSections.map((section) => renderMatrixSection(section)).join("");
 
   if (!tablesMarkup.trim()) {
-    container.innerHTML = phaseTabsHTML + secondaryTabsHTML + `<div class="empty-state">Nenhum palpite registrado nesta etapa ainda.</div>`;
+    container.innerHTML =
+      phaseTabsHTML +
+      secondaryTabsHTML +
+      exportActionsHTML +
+      `<div class="empty-state">Nenhum palpite registrado nesta etapa ainda.</div>`;
+    const imageButton = container.querySelector("#predictions-export-image");
+    const pdfButton = container.querySelector("#predictions-export-pdf");
+    if (imageButton) imageButton.addEventListener("click", exportPredictionsAsImage);
+    if (pdfButton) pdfButton.addEventListener("click", exportPredictionsAsPdf);
     return;
   }
 
-  container.innerHTML = phaseTabsHTML + secondaryTabsHTML + tableStyles + tablesMarkup;
+  container.innerHTML = phaseTabsHTML + secondaryTabsHTML + exportActionsHTML + tablesMarkup;
+  const imageButton = container.querySelector("#predictions-export-image");
+  const pdfButton = container.querySelector("#predictions-export-pdf");
+  if (imageButton) imageButton.addEventListener("click", exportPredictionsAsImage);
+  if (pdfButton) pdfButton.addEventListener("click", exportPredictionsAsPdf);
 }
 
 window.setPredictPhase = (ph) => {
