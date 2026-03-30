@@ -1501,11 +1501,17 @@ function renderOverview(leaderboard) {
 }
 
 function renderUserSummary(leaderboard) {
+  if (!userSummary) return;
+  if (PUBLIC_CONSULT_MODE) {
+    userSummary.innerHTML = "";
+    userSummary.style.display = "none";
+    return;
+  }
+
+  userSummary.style.display = "";
   const participant = getParticipantById(currentUserId);
   if (!participant) {
-    userSummary.innerHTML = PUBLIC_CONSULT_MODE
-      ? "<p class='muted'>Acesso único liberado para todos. O site está em modo consulta pública.</p>"
-      : "<p class='muted'>Faça login para liberar a área exclusiva.</p>";
+    userSummary.innerHTML = "<p class='muted'>Faça login para liberar a área exclusiva.</p>";
     return;
   }
 
