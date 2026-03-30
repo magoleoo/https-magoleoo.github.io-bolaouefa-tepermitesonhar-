@@ -1106,7 +1106,10 @@ function formatPoints(value) {
 }
 
 function formatKickoff(value) {
-  return new Date(value).toLocaleString("pt-BR", {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

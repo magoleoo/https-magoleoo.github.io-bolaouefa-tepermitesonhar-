@@ -158,8 +158,49 @@ PSV Eindhoven 1-2 Bayern München
 Union Saint-Gilloise 1-0 Atalanta
 Benfica 4-2 Real Madrid
 Napoli 2-3 Chelsea
-`,
+	`,
 };
+
+// Datas oficiais da UEFA para cada rodada da 1ª fase (2025/26).
+// Fonte: https://www.uefa.com/uefachampionsleague/news/029c-1e9a2f63fe2d-ebf9ad643892-1000--2025-26-champions-league-all-the-fixtures-and-results/
+window.leaguePhaseDateRangesByMatchday = {
+  1: [
+    { fromIndex: 0, toIndex: 5, date: "2025-09-16" },
+    { fromIndex: 6, toIndex: 11, date: "2025-09-17" },
+    { fromIndex: 12, toIndex: 17, date: "2025-09-18" },
+  ],
+  2: [
+    { fromIndex: 0, toIndex: 8, date: "2025-09-30" },
+    { fromIndex: 9, toIndex: 17, date: "2025-10-01" },
+  ],
+  3: [
+    { fromIndex: 0, toIndex: 8, date: "2025-10-21" },
+    { fromIndex: 9, toIndex: 17, date: "2025-10-22" },
+  ],
+  4: [
+    { fromIndex: 0, toIndex: 8, date: "2025-11-04" },
+    { fromIndex: 9, toIndex: 17, date: "2025-11-05" },
+  ],
+  5: [
+    { fromIndex: 0, toIndex: 8, date: "2025-11-25" },
+    { fromIndex: 9, toIndex: 17, date: "2025-11-26" },
+  ],
+  6: [
+    { fromIndex: 0, toIndex: 8, date: "2025-12-09" },
+    { fromIndex: 9, toIndex: 17, date: "2025-12-10" },
+  ],
+  7: [
+    { fromIndex: 0, toIndex: 8, date: "2026-01-20" },
+    { fromIndex: 9, toIndex: 17, date: "2026-01-21" },
+  ],
+  8: [{ fromIndex: 0, toIndex: 17, date: "2026-01-28" }],
+};
+
+function resolveLeagueKickoffDate(matchday, index) {
+  const ranges = window.leaguePhaseDateRangesByMatchday[Number(matchday)] || [];
+  const range = ranges.find((item) => index >= item.fromIndex && index <= item.toIndex);
+  return range?.date || null;
+}
 
 function parseLeagueLine(line) {
   const trimmed = line.trim();
@@ -189,6 +230,7 @@ window.leaguePhaseResults = Object.entries(window.leaguePhaseRawByMatchday).flat
         id: `LEAGUE-${matchday}-${index + 1}`,
         phase: "LEAGUE",
         matchday: `Matchday ${matchday}`,
+        kickoff: resolveLeagueKickoffDate(matchday, index),
         ...parseLeagueLine(line),
       }))
 );
