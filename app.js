@@ -39,6 +39,7 @@ const loginUserList =
 const skipLoginButton = document.querySelector("#skip-login-button");
 const loginFeedback = document.querySelector("#login-feedback");
 const logoutButton = document.querySelector("#logout-button");
+const topbarActions = document.querySelector(".topbar-actions");
 const overviewCards = document.querySelector("#overview-cards");
 const rankingTable = document.querySelector("#ranking-table");
 const matchesGrid =
@@ -3897,6 +3898,9 @@ function renderApp() {
   renderSuperclassicPanel();
   renderQuarterFinalsForm();
   renderQuarterFinalsFormsPanel();
+  if (topbarActions) {
+    topbarActions.style.display = PUBLIC_CONSULT_MODE ? "none" : "";
+  }
   if (logoutButton) {
     logoutButton.style.display = PUBLIC_CONSULT_MODE ? "none" : "";
   }

@@ -1144,6 +1144,7 @@ thead th {
   color: var(--accent);
 }
 
+.top-8-grid,
 .qualified-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1671,6 +1672,7 @@ option {
   .layout,
   .hero,
   .cards-grid,
+  .top-8-grid,
   .qualified-grid,
   .league-phase-grid,
   .superclassic-submissions,
@@ -1735,6 +1737,10 @@ option {
   }
 
   .topbar-actions {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
     justify-content: center;
     width: 100%;
     gap: 8px;
@@ -1814,6 +1820,23 @@ option {
     padding: 6px 10px;
   }
 
+  .top-8-grid,
+  .qualified-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .qualified-card {
+    gap: 8px;
+    padding: 14px 10px;
+    border-radius: 14px;
+  }
+
+  .qualified-card strong {
+    font-size: 0.84rem;
+    line-height: 1.2;
+  }
+
   .table-wrap {
     margin-top: 6px;
     border-radius: 10px;
@@ -1875,6 +1898,34 @@ option {
   .predictions-export-actions .ghost-button {
     min-width: 0;
     flex: 1 1 100%;
+  }
+
+  .predictions-tab-button {
+    padding: 10px 14px;
+    font-size: 0.92rem;
+  }
+
+  .prediction-mobile-match {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .prediction-mobile-head strong {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .prediction-mobile-stat {
+    font-size: 0.74rem;
+    padding: 6px 10px;
+  }
+
+  .prediction-mobile-name {
+    font-size: 0.96rem;
+  }
+
+  .prediction-mobile-pick {
+    font-size: 1rem;
   }
 
   .predictions-table-desktop {
