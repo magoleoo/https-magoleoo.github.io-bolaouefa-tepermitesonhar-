@@ -1576,6 +1576,47 @@ option {
   background: rgba(117, 209, 255, 0.16);
 }
 
+/* Tendência em amarelo (Palpites + Superclássicos), mantendo verde para placar exato */
+#panel-predictions .predictions-matrix-table td.hit-trend,
+#panel-superclassic .predictions-matrix-table td.hit-trend {
+  background: rgba(255, 209, 102, 0.2) !important;
+  color: #fff2c4;
+}
+
+#panel-predictions .predictions-cell-mark.trend,
+#panel-superclassic .predictions-cell-mark.trend,
+#panel-superclassic .superclassic-trend-mark {
+  color: #ffe6a0;
+}
+
+#panel-predictions .prediction-mobile-stat.trend,
+#panel-superclassic .prediction-mobile-stat.trend,
+#panel-superclassic .superclassic-mobile-board .prediction-mobile-stat.trend {
+  border-color: rgba(255, 209, 102, 0.45);
+  background: rgba(255, 209, 102, 0.2);
+  color: #ffe7ad;
+}
+
+#panel-predictions .prediction-mobile-row.is-trend,
+#panel-superclassic .prediction-mobile-row.is-trend,
+#panel-superclassic .superclassic-mobile-board .prediction-mobile-row.is-trend {
+  border-color: rgba(255, 209, 102, 0.42);
+  background: rgba(255, 209, 102, 0.16);
+}
+
+#panel-predictions .result-chip.trend,
+#panel-superclassic .result-chip.trend {
+  background: rgba(255, 209, 102, 0.2);
+  border-color: rgba(255, 209, 102, 0.38);
+  color: #fff2c4;
+}
+
+#panel-superclassic .superclassic-trend-hit {
+  background: rgba(255, 209, 102, 0.2);
+  color: #fff2c4;
+  box-shadow: inset 0 0 0 1px rgba(255, 209, 102, 0.38);
+}
+
 .superclassic-official-pill {
   display: inline-block;
   background: rgba(59, 201, 114, 0.2);
