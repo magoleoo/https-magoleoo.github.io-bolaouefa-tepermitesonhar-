@@ -60,6 +60,7 @@ const tabAwards = document.querySelector("#tab-awards");
 const tabPredictions = document.querySelector("#tab-predictions");
 const tabHistory = document.querySelector("#tab-history");
 const tabRules = document.querySelector("#tab-rules");
+const mobileTabSelect = document.querySelector("#mobile-tab-select");
 
 const resultsTabs = document.querySelector("#results-tabs");
 const matchesList = document.querySelector("#matches-list");
@@ -79,6 +80,7 @@ let currentUserId = localStorage.getItem(storageKeys.session) || "";
 if (!localStorage.getItem("ucl-bolao-guest") && !currentUserId) {
   localStorage.setItem("ucl-bolao-guest", "1");
 }
+let activeMainTab = "ranking";
 let leaguePhaseData = null;
 let backtestData = null;
 let quarterFinalsFormsData = null;
@@ -2221,6 +2223,7 @@ function renderSuperclassicPanel() {
 }
 
 function setActiveTab(tab) {
+  activeMainTab = tab;
   const showRanking = tab === "ranking";
   const showResults = tab === "results";
   const showSubmitQf = tab === "submit-qf";
@@ -2242,6 +2245,9 @@ function setActiveTab(tab) {
   panelPredictions.classList.toggle("is-active", showPredictions);
   panelHistory.classList.toggle("is-active", showHistory);
   panelRules.classList.toggle("is-active", showRules);
+  if (mobileTabSelect && mobileTabSelect.value !== tab) {
+    mobileTabSelect.value = tab;
+  }
 }
 
 const qrMatches = [
@@ -3510,11 +3516,20 @@ tabPredictions.addEventListener("click", () => setActiveTab("predictions"));
 tabHistory.addEventListener("click", () => setActiveTab("history"));
 tabRules.addEventListener("click", () => setActiveTab("rules"));
 if (tabSubmitQf) tabSubmitQf.addEventListener("click", () => setActiveTab("submit-qf"));
+if (mobileTabSelect) {
+  mobileTabSelect.addEventListener("change", (event) => {
+    const nextTab = String(event.target.value || "").trim();
+    if (!nextTab) return;
+    setActiveTab(nextTab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
 
 window.addEventListener("DOMContentLoaded", () => {
   loadImmediateData();
   populateLoginSelect();
   renderRules();
   renderApp();
+  setActiveTab(activeMainTab);
   loadQuarterFinalsFormsData().then(renderApp);
 });

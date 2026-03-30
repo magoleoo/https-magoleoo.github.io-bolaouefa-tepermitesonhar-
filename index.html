@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=27.0" />
+    <link rel="stylesheet" href="./styles.css?v=28.0" />
   </head>
   <body>
     <div class="app-shell">
@@ -37,7 +37,7 @@
             para evoluir o cálculo automático conforme os jogos acontecerem.
           </p>
         </article>
-
+      </section>
 
       <main class="layout">
         <aside class="sidebar">
@@ -53,13 +53,24 @@
         </aside>
 
         <section class="content">
-          <section class="tabs-bar">
+          <section class="tabs-bar main-tabs-bar">
             <button id="tab-ranking" class="tab-button is-active" type="button">Ranking</button>
             <button id="tab-results" class="tab-button" type="button">Resultados</button>
             <button id="tab-superclassic" class="tab-button" type="button">Superclássicos</button>
             <button id="tab-predictions" class="tab-button" type="button">Palpites</button>
             <button id="tab-history" class="tab-button" type="button">Histórico</button>
             <button id="tab-rules" class="tab-button" type="button">Regras</button>
+            <div class="mobile-tab-picker">
+              <label class="sr-only" for="mobile-tab-select">Abrir aba</label>
+              <select id="mobile-tab-select">
+                <option value="ranking">Ranking</option>
+                <option value="results">Resultados</option>
+                <option value="superclassic">Superclássicos</option>
+                <option value="predictions">Palpites</option>
+                <option value="history">Histórico</option>
+                <option value="rules">Regras</option>
+              </select>
+            </div>
           </section>
 
           <section id="panel-ranking" class="tab-panel is-active">
@@ -255,6 +266,6 @@
     <script src="./data.js?v=37.0"></script>
     <script src="./results-data.js?v=32.0"></script>
     <script src="./superclassicos.js?v=38.0"></script>
-    <script src="./app.js?v=63.0"></script>
+    <script src="./app.js?v=64.0"></script>
   </body>
 </html>
