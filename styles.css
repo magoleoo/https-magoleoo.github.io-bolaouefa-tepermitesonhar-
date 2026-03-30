@@ -624,6 +624,61 @@ select {
   gap: 6px;
 }
 
+.prediction-mobile-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prediction-mobile-stat {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8f2ff;
+}
+
+.prediction-mobile-stat.exact {
+  border-color: rgba(0, 255, 135, 0.34);
+  background: rgba(0, 255, 135, 0.14);
+  color: #9af4c4;
+}
+
+.prediction-mobile-stat.trend {
+  border-color: rgba(117, 209, 255, 0.35);
+  background: rgba(36, 84, 255, 0.16);
+  color: #b6e6ff;
+}
+
+.prediction-mobile-stat.neutral {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #d5e5ff;
+}
+
+.prediction-mobile-group {
+  display: grid;
+  gap: 8px;
+}
+
+.prediction-mobile-group-title {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.prediction-mobile-empty-hit {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
 .prediction-mobile-list {
   list-style: none;
   margin: 0;
@@ -653,6 +708,11 @@ select {
   background: rgba(36, 84, 255, 0.14);
 }
 
+.prediction-mobile-row.is-neutral {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .prediction-mobile-name {
   font-size: 0.9rem;
   color: var(--text);
@@ -664,26 +724,38 @@ select {
   color: #eaf2ff;
 }
 
-.prediction-mobile-chip {
-  grid-column: 1 / -1;
-  justify-self: start;
-  border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 0.64rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+.prediction-mobile-details {
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.prediction-mobile-chip.exact {
-  color: #9af4c4;
-  background: rgba(0, 255, 135, 0.18);
-  border: 1px solid rgba(0, 255, 135, 0.3);
+.prediction-mobile-details summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--muted);
+  list-style: none;
 }
 
-.prediction-mobile-chip.trend {
-  color: #a7deff;
-  background: rgba(36, 84, 255, 0.18);
-  border: 1px solid rgba(117, 209, 255, 0.32);
+.prediction-mobile-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.prediction-mobile-details summary::after {
+  content: " ▾";
+}
+
+.prediction-mobile-details[open] summary::after {
+  content: " ▴";
+}
+
+.prediction-mobile-details .prediction-mobile-list {
+  margin-top: 8px;
+}
+
+.prediction-mobile-list.is-secondary .prediction-mobile-row {
+  opacity: 0.9;
 }
 
 .empty-state {

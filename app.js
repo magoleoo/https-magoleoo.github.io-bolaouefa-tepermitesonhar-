@@ -3295,6 +3295,22 @@ function renderPredictionConsultation() {
                   hitType: row.cells[columnIndex]?.hitType || "",
                 }))
                 .filter((entry) => entry.value !== "-");
+              const exactHits = picks.filter((entry) => entry.hitType === "exact");
+              const trendHits = picks.filter((entry) => entry.hitType === "trend");
+              const otherPicks = picks.filter(
+                (entry) => entry.hitType !== "exact" && entry.hitType !== "trend"
+              );
+              const renderPickRows = (entries, tone = "") =>
+                entries
+                  .map(
+                    (entry) => `
+                      <li class="prediction-mobile-row ${tone}">
+                        <span class="prediction-mobile-name">${entry.participantName}</span>
+                        <span class="prediction-mobile-pick">${entry.value}</span>
+                      </li>
+                    `
+                  )
+                  .join("");
 
               return `
                 <article class="prediction-mobile-match">
@@ -3303,33 +3319,62 @@ function renderPredictionConsultation() {
                     <strong>${column.label || "-"}</strong>
                     <span class="status-pill">Oficial: ${column.official || "-"}</span>
                   </header>
-                  <ul class="prediction-mobile-list">
-                    ${
-                      picks.length
-                        ? picks
-                            .map((entry) => {
-                              const rowClass = entry.hitType === "exact"
-                                ? "is-exact"
-                                : entry.hitType === "trend"
-                                  ? "is-trend"
-                                  : "";
-                              const chip = entry.hitType === "exact"
-                                ? `<span class="prediction-mobile-chip exact">Placar exato</span>`
-                                : entry.hitType === "trend"
-                                  ? `<span class="prediction-mobile-chip trend">Tendência</span>`
-                                  : "";
-                              return `
-                                <li class="prediction-mobile-row ${rowClass}">
-                                  <span class="prediction-mobile-name">${entry.participantName}</span>
-                                  <span class="prediction-mobile-pick">${entry.value}</span>
-                                  ${chip}
-                                </li>
-                              `;
-                            })
-                            .join("")
-                        : `<li class="prediction-mobile-row"><span class="muted">Sem palpites neste jogo.</span></li>`
-                    }
-                  </ul>
+                  ${
+                    picks.length
+                      ? `
+                        <div class="prediction-mobile-stats">
+                          <span class="prediction-mobile-stat exact">🎯 ${exactHits.length} exato(s)</span>
+                          <span class="prediction-mobile-stat trend">📈 ${trendHits.length} tendência(s)</span>
+                          <span class="prediction-mobile-stat neutral">${otherPicks.length} outro(s)</span>
+                        </div>
+
+                        ${
+                          !exactHits.length && !trendHits.length
+                            ? `<p class="prediction-mobile-empty-hit muted">Ninguém acertou placar exato ou tendência neste jogo.</p>`
+                            : ""
+                        }
+
+                        ${
+                          exactHits.length
+                            ? `
+                              <section class="prediction-mobile-group">
+                                <h4 class="prediction-mobile-group-title">Placar exato</h4>
+                                <ul class="prediction-mobile-list">
+                                  ${renderPickRows(exactHits, "is-exact")}
+                                </ul>
+                              </section>
+                            `
+                            : ""
+                        }
+
+                        ${
+                          trendHits.length
+                            ? `
+                              <section class="prediction-mobile-group">
+                                <h4 class="prediction-mobile-group-title">Tendência</h4>
+                                <ul class="prediction-mobile-list">
+                                  ${renderPickRows(trendHits, "is-trend")}
+                                </ul>
+                              </section>
+                            `
+                            : ""
+                        }
+
+                        ${
+                          otherPicks.length
+                            ? `
+                              <details class="prediction-mobile-details">
+                                <summary>Ver outros palpites (${otherPicks.length})</summary>
+                                <ul class="prediction-mobile-list is-secondary">
+                                  ${renderPickRows(otherPicks, "is-neutral")}
+                                </ul>
+                              </details>
+                            `
+                            : ""
+                        }
+                      `
+                      : `<ul class="prediction-mobile-list"><li class="prediction-mobile-row"><span class="muted">Sem palpites neste jogo.</span></li></ul>`
+                  }
                 </article>
               `;
             })
