@@ -1008,6 +1008,23 @@ table {
   color: #ffe6a0;
 }
 
+#panel-ranking .ranking-col-superclassic {
+  width: 84px;
+  min-width: 84px;
+  white-space: normal;
+  line-height: 1.08;
+}
+
+#panel-ranking .ranking-col-superclassic span {
+  display: block;
+}
+
+#panel-ranking .dashboard-table td:nth-child(8) {
+  width: 84px;
+  min-width: 84px;
+  white-space: nowrap;
+}
+
 .dashboard-table tbody tr:last-child td {
   border-bottom: none;
 }
