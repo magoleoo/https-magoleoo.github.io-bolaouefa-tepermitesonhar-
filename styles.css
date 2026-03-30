@@ -983,6 +983,19 @@ table {
   vertical-align: middle;
 }
 
+/* TESTE VISUAL: ranking em tom ouro (somente aba Ranking). */
+#panel-ranking .section-heading h2 {
+  color: #ffd166;
+}
+
+#panel-ranking .dashboard-table th {
+  color: #ffd166;
+}
+
+#panel-ranking .dashboard-table td {
+  color: #ffe6a0;
+}
+
 .dashboard-table tbody tr:last-child td {
   border-bottom: none;
 }
