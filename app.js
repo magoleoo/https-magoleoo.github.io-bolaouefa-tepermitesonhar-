@@ -42,6 +42,10 @@ const logoutButton = document.querySelector("#logout-button");
 const topbarActions = document.querySelector(".topbar-actions");
 const overviewCards = document.querySelector("#overview-cards");
 const rankingTable = document.querySelector("#ranking-table");
+const rankingTableWrap = rankingTable?.closest(".table-wrap");
+const rankingCards = document.querySelector("#ranking-cards");
+const rankingViewTableBtn = document.querySelector("#ranking-view-table-btn");
+const rankingViewCardsBtn = document.querySelector("#ranking-view-cards-btn");
 const matchesGrid =
   document.querySelector("#matches-grid") || document.querySelector("#matches-list");
 const predictionsForm = document.querySelector("#predictions-form");
@@ -90,6 +94,7 @@ if (PUBLIC_CONSULT_MODE) {
   localStorage.setItem("ucl-bolao-guest", "1");
 }
 let activeMainTab = "ranking";
+let rankingMobileView = "table";
 let leaguePhaseData = null;
 let backtestData = null;
 let quarterFinalsFormsData = null;
@@ -1555,6 +1560,24 @@ function renderAwards(leaderboard) {
     .join("");
 }
 
+function setRankingMobileView(view) {
+  const nextView = view === "cards" ? "cards" : "table";
+  rankingMobileView = nextView;
+
+  if (rankingViewTableBtn) {
+    rankingViewTableBtn.classList.toggle("is-active", nextView === "table");
+  }
+  if (rankingViewCardsBtn) {
+    rankingViewCardsBtn.classList.toggle("is-active", nextView === "cards");
+  }
+  if (rankingTableWrap) {
+    rankingTableWrap.classList.toggle("is-hidden-mobile", nextView === "cards");
+  }
+  if (rankingCards) {
+    rankingCards.classList.toggle("is-active", nextView === "cards");
+  }
+}
+
 function renderRanking(leaderboard) {
   const prizeClass = (position) => {
     if (position === 1) return "prize-gold";
@@ -1594,6 +1617,45 @@ function renderRanking(leaderboard) {
       `
     )
     .join("");
+
+  if (rankingCards) {
+    rankingCards.innerHTML = leaderboard
+      .map((row) => {
+        const quarterValue = hasQuarterRows ? formatPoints(row.quarter || 0) : "-";
+        return `
+          <article class="ranking-mobile-card ${row.position <= 4 ? "is-award" : ""}">
+            <header class="ranking-mobile-card-head">
+              <span class="ranking-mobile-position">#${row.position}</span>
+              ${
+                row.position <= 4
+                  ? `<span class="prize-mark ${prizeClass(row.position)}" aria-hidden="true">🏆</span>`
+                  : ""
+              }
+            </header>
+            <h3>${row.participant.name}</h3>
+            <p class="ranking-mobile-total">${formatPoints(row.total)} pontos</p>
+            <div class="ranking-mobile-breakdown">
+              <span><strong>1ª fase</strong>${formatPoints(row.firstPhase)}</span>
+              <span><strong>Playoff</strong>${formatPoints(row.playoff)}</span>
+              <span><strong>Oitavas</strong>${formatPoints(row.roundOf16)}</span>
+              <span><strong>Quartas</strong>${quarterValue}</span>
+            </div>
+            <div class="ranking-mobile-extra">
+              <span><strong>Superclássico:</strong> ${formatPoints(row.superclassic)}</span>
+              <span><strong>Hope Solo:</strong> 🧤 ${row.hopeSolo || 0}</span>
+            </div>
+            <div class="ranking-mobile-picks">
+              <span><strong>Time favorito:</strong> ${row.favoriteTeam || "-"}</span>
+              <span><strong>Artilheiro:</strong> ${row.scorerPick || "-"}</span>
+              <span><strong>Garçom:</strong> ${row.assistPick || "-"}</span>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  setRankingMobileView(rankingMobileView);
 }
 
 window.setLeagueMatchday = (md) => {
@@ -4325,6 +4387,8 @@ tabPredictions.addEventListener("click", () => setActiveTab("predictions"));
 tabHistory.addEventListener("click", () => setActiveTab("history"));
 tabRules.addEventListener("click", () => setActiveTab("rules"));
 if (tabSubmitQf) tabSubmitQf.addEventListener("click", () => setActiveTab("submit-qf"));
+if (rankingViewTableBtn) rankingViewTableBtn.addEventListener("click", () => setRankingMobileView("table"));
+if (rankingViewCardsBtn) rankingViewCardsBtn.addEventListener("click", () => setRankingMobileView("cards"));
 if (mobileTabSelect) {
   mobileTabSelect.addEventListener("change", (event) => {
     const nextTab = String(event.target.value || "").trim();
@@ -4340,5 +4404,6 @@ window.addEventListener("DOMContentLoaded", () => {
   renderRules();
   renderApp();
   setActiveTab(activeMainTab);
+  setRankingMobileView(rankingMobileView);
   Promise.all([loadQuarterFinalsFormsData(), loadTournamentOutcomeFormsData()]).then(renderApp);
 });
