@@ -436,7 +436,12 @@ def main() -> int:
             parsed_updates.append(parsed)
 
     if not parsed_updates:
-        raise RuntimeError("Nenhuma linha válida de resultado encontrada no CSV.")
+        print(
+            f"[sync_results_from_csv] fonte={source_label} | linhas_csv={len(csv_rows)} | "
+            "linhas_validas=0 | nenhuma atualização aplicada (aguardando placares)."
+        )
+        print("[sync_results_from_csv] dry_run=True (implícito por no-op)")
+        return 0
 
     updated = 0
     unmatched_rows: list[int] = []
