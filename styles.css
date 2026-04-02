@@ -1124,6 +1124,82 @@ thead th {
   background: rgba(255, 255, 255, 0.02);
 }
 
+.ranking-mobile-view-switch {
+  display: none;
+}
+
+.ranking-cards-mobile {
+  display: none;
+  gap: 10px;
+}
+
+.ranking-mobile-card {
+  border-radius: 14px;
+  border: 1px solid rgba(117, 209, 255, 0.22);
+  background: linear-gradient(180deg, rgba(12, 30, 136, 0.92), rgba(6, 15, 82, 0.9));
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.ranking-mobile-card.is-award {
+  border-color: rgba(117, 209, 255, 0.44);
+  box-shadow: 0 10px 22px rgba(2, 8, 48, 0.26);
+}
+
+.ranking-mobile-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ranking-mobile-position {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.ranking-mobile-card h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.3;
+}
+
+.ranking-mobile-total {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.ranking-mobile-breakdown {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ranking-mobile-breakdown span,
+.ranking-mobile-extra span,
+.ranking-mobile-picks span {
+  display: grid;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.ranking-mobile-breakdown strong,
+.ranking-mobile-extra strong,
+.ranking-mobile-picks strong {
+  color: var(--text);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ranking-mobile-extra,
+.ranking-mobile-picks {
+  display: grid;
+  gap: 6px;
+}
+
 .matches-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1865,6 +1941,28 @@ option {
     border-radius: 10px;
     border-color: rgba(178, 201, 255, 0.3);
     box-shadow: inset 0 0 0 1px rgba(117, 209, 255, 0.12);
+  }
+
+  #panel-ranking .ranking-mobile-view-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  #panel-ranking .ranking-mobile-view-switch .tab-button {
+    display: block;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 0.86rem;
+  }
+
+  #panel-ranking .table-wrap.is-hidden-mobile {
+    display: none;
+  }
+
+  #panel-ranking .ranking-cards-mobile.is-active {
+    display: grid;
   }
 
   .table-wrapper {
