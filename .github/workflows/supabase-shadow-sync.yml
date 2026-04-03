@@ -36,6 +36,49 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Diagnóstico de conexão e schema Supabase
+        if: ${{ steps.guard.outputs.ready == 'true' }}
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BOLAO_SEASON_ID: ${{ vars.BOLAO_SEASON_ID }}
+        run: |
+          echo "Verificando configuração..."
+          echo "SUPABASE_URL: ${SUPABASE_URL}"
+          echo "BOLAO_SEASON_ID: ${BOLAO_SEASON_ID:-<vazio - será auto>}"
+
+          if [[ "${SUPABASE_URL}" != https://* ]]; then
+            echo "SUPABASE_URL inválida. Deve começar com https://"
+            exit 1
+          fi
+
+          status=$(curl -sS -o /tmp/supabase_check_body.json -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/bolao_seasons?select=season_id&limit=1" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+
+          echo "HTTP status do check: ${status}"
+          cat /tmp/supabase_check_body.json || true
+
+          if [ "${status}" = "200" ]; then
+            echo "Conexão e tabela bolao_seasons OK."
+            exit 0
+          fi
+
+          if [ "${status}" = "404" ]; then
+            echo "Schema não encontrado no Supabase (tabelas bolao_* ausentes)."
+            echo "Rode o arquivo supabase/schema.sql no SQL Editor do Supabase."
+            exit 1
+          fi
+
+          if [ "${status}" = "401" ] || [ "${status}" = "403" ]; then
+            echo "Falha de autenticação. Verifique SUPABASE_SERVICE_ROLE_KEY em GitHub Secrets."
+            exit 1
+          fi
+
+          echo "Falha de conectividade/configuração (status ${status})."
+          exit 1
+
       - name: Sincronizar snapshot do bolão para Supabase
         if: ${{ steps.guard.outputs.ready == 'true' }}
         env:
