@@ -37,6 +37,7 @@ jobs:
           python-version: "3.11"
 
       - name: Diagnóstico de conexão e schema Supabase
+        id: diag
         if: ${{ steps.guard.outputs.ready == 'true' }}
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
@@ -49,7 +50,8 @@ jobs:
 
           if [[ "${SUPABASE_URL}" != https://* ]]; then
             echo "SUPABASE_URL inválida. Deve começar com https://"
-            exit 1
+            echo "sync_ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           status=$(curl -sS -o /tmp/supabase_check_body.json -w "%{http_code}" \
@@ -62,28 +64,38 @@ jobs:
 
           if [ "${status}" = "200" ]; then
             echo "Conexão e tabela bolao_seasons OK."
+            echo "sync_ready=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if [ "${status}" = "404" ]; then
             echo "Schema não encontrado no Supabase (tabelas bolao_* ausentes)."
             echo "Rode o arquivo supabase/schema.sql no SQL Editor do Supabase."
-            exit 1
+            echo "sync_ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           if [ "${status}" = "401" ] || [ "${status}" = "403" ]; then
             echo "Falha de autenticação. Verifique SUPABASE_SERVICE_ROLE_KEY em GitHub Secrets."
-            exit 1
+            echo "sync_ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           echo "Falha de conectividade/configuração (status ${status})."
-          exit 1
+          echo "sync_ready=false" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Sincronizar snapshot do bolão para Supabase
-        if: ${{ steps.guard.outputs.ready == 'true' }}
+        if: ${{ steps.guard.outputs.ready == 'true' && steps.diag.outputs.sync_ready == 'true' }}
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           BOLAO_SEASON_ID: ${{ vars.BOLAO_SEASON_ID }}
         run: |
           python tools/sync_shadow_to_supabase.py
+
+      - name: Modo orientação (diagnóstico não apto para sync)
+        if: ${{ steps.guard.outputs.ready == 'true' && steps.diag.outputs.sync_ready != 'true' }}
+        run: |
+          echo "Sync não executado por diagnóstico de configuração."
+          echo "Abra os logs da etapa 'Diagnóstico de conexão e schema Supabase' para ver o ajuste exato."
